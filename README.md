@@ -54,40 +54,14 @@ data, the former using COPY commands, the latter using INSERT commands, so you
 only need to install one of them. Both formats are provided for those who have
 trouble using one version or another.
 
-
-ARTICLES
---------------
-
-The following articles make use of pagila to showcase various PostgreSQL
-features:
-
-* Showcasing REST in PostgreSQL - The PreQuel
-http://www.postgresonline.com/journal/index.php?/archives/32-Showcasing-REST-in-PostgreSQL-The-PreQuel.html#extended
-
-* PostgreSQL 8.3 Features: Enum Datatype
-http://people.planetpostgresql.org/xzilla/index.php?/archives/320-PostgreSQL-8.3-Features-Enum-Datatype.html
-
-* Email Validation with pl/PHP
-http://people.planetpostgresql.org/xzilla/index.php?/archives/261-Re-inventing-Gregs-method-to-prevent-re-inventing.html
-
-* Getting Started with PostgreSQL for Windows
-http://www.charltonlopez.com/index.php?option=com_content&task=view&id=56&Itemid=38
-
-* RATIO_TO_REPORT in PostgreSQL
-http://people.planetpostgresql.org/xzilla/index.php?/search/pagila/P3.html
-
-* The postmaster and postgres Processes
-http://www.charltonlopez.com/index.php?option=com_content&task=view&id=57&Itemid=38
-
-* Building Rails to Legacy Applications :: Take Control of Active Record
-http://people.planetpostgresql.org/xzilla/index.php?/archives/220-Building-Rails-to-Legacy-Applications-Take-Control-of-Active-Record.html
-
-* Building Rails to Legacy Applications :: Masking the Database
-http://people.planetpostgresql.org/xzilla/index.php?/archives/213-Building-Rails-to-Legacy-Applications-Masking-the-Database.html
-
-
 VERSION HISTORY
 ---------------
+
+Version 0.11.0
+* Update schema for newer PostgreSQL versions
+* Remove RULE for partitioning, add trigger support.
+* Update years in sample data. 
+* Remove ARTICLES section from README, all links are dead.
 
 Version 0.10.1
 * Add pagila-data-insert.sql file, added articles section
