@@ -246,18 +246,18 @@ CREATE FUNCTION pagila_payment_insert_trigger() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-	IF (NEW.tarih >= '2016-01-01' AND NEW.tarih < '2016-02-01' ) THEN
-		INSERT INTO payment_p2016_01 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2016-02-01' AND NEW.tarih < '2016-03-01' ) THEN
-                INSERT INTO payment_p2016_02 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2016-03-01' AND NEW.tarih < '2016-04-01' ) THEN
-                INSERT INTO payment_p2016_03 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2016-04-01' AND NEW.tarih < '2016-05-01' ) THEN
-                INSERT INTO payment_p2016_04 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2016-05-01' AND NEW.tarih < '2016-06-01' ) THEN
-                INSERT INTO payment_p2016_05 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2016-06-01' AND NEW.tarih < '2016-07-01' ) THEN
-                INSERT INTO payment_p2016_06 VALUES (NEW.*);
+	IF (NEW.tarih >= '2017-01-01' AND NEW.tarih < '2017-02-01' ) THEN
+		INSERT INTO payment_p2017_01 VALUES (NEW.*);
+	ELSIF (NEW.tarih >= '2017-02-01' AND NEW.tarih < '2017-03-01' ) THEN
+                INSERT INTO payment_p2017_02 VALUES (NEW.*);
+	ELSIF (NEW.tarih >= '2017-03-01' AND NEW.tarih < '2017-04-01' ) THEN
+                INSERT INTO payment_p2017_03 VALUES (NEW.*);
+	ELSIF (NEW.tarih >= '2017-04-01' AND NEW.tarih < '2017-05-01' ) THEN
+                INSERT INTO payment_p2017_04 VALUES (NEW.*);
+	ELSIF (NEW.tarih >= '2017-05-01' AND NEW.tarih < '2017-06-01' ) THEN
+                INSERT INTO payment_p2017_05 VALUES (NEW.*);
+	ELSIF (NEW.tarih >= '2017-06-01' AND NEW.tarih < '2017-07-01' ) THEN
+                INSERT INTO payment_p2017_06 VALUES (NEW.*);
 	ELSE
             	RAISE EXCEPTION 'Missing partition!' ;
         END IF;
@@ -768,76 +768,76 @@ CREATE TABLE payment (
 ALTER TABLE payment OWNER TO postgres;
 
 --
--- Name: payment_p2016_01; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_01; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE payment_p2016_01 (
-    CONSTRAINT payment_p2016_01_payment_date_check CHECK (((payment_date >= '2016-01-01 00:00:00'::timestamp without time zone) AND (payment_date < '2016-02-01 00:00:00'::timestamp without time zone)))
+CREATE TABLE payment_p2017_01 (
+    CONSTRAINT payment_p2017_01_payment_date_check CHECK (((payment_date >= '2017-01-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-02-01 00:00:00'::timestamp without time zone)))
 )
 INHERITS (payment);
 
 
-ALTER TABLE payment_p2016_01 OWNER TO postgres;
+ALTER TABLE payment_p2017_01 OWNER TO postgres;
 
 --
--- Name: payment_p2016_02; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_02; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE payment_p2016_02 (
-    CONSTRAINT payment_p2016_02_payment_date_check CHECK (((payment_date >= '2016-02-01 00:00:00'::timestamp without time zone) AND (payment_date < '2016-03-01 00:00:00'::timestamp without time zone)))
+CREATE TABLE payment_p2017_02 (
+    CONSTRAINT payment_p2017_02_payment_date_check CHECK (((payment_date >= '2017-02-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-03-01 00:00:00'::timestamp without time zone)))
 )
 INHERITS (payment);
 
 
-ALTER TABLE payment_p2016_02 OWNER TO postgres;
+ALTER TABLE payment_p2017_02 OWNER TO postgres;
 
 --
--- Name: payment_p2016_03; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_03; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE payment_p2016_03 (
-    CONSTRAINT payment_p2016_03_payment_date_check CHECK (((payment_date >= '2016-03-01 00:00:00'::timestamp without time zone) AND (payment_date < '2016-04-01 00:00:00'::timestamp without time zone)))
+CREATE TABLE payment_p2017_03 (
+    CONSTRAINT payment_p2017_03_payment_date_check CHECK (((payment_date >= '2017-03-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-04-01 00:00:00'::timestamp without time zone)))
 )
 INHERITS (payment);
 
 
-ALTER TABLE payment_p2016_03 OWNER TO postgres;
+ALTER TABLE payment_p2017_03 OWNER TO postgres;
 
 --
--- Name: payment_p2016_04; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_04; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE payment_p2016_04 (
-    CONSTRAINT payment_p2016_04_payment_date_check CHECK (((payment_date >= '2016-04-01 00:00:00'::timestamp without time zone) AND (payment_date < '2016-05-01 00:00:00'::timestamp without time zone)))
+CREATE TABLE payment_p2017_04 (
+    CONSTRAINT payment_p2017_04_payment_date_check CHECK (((payment_date >= '2017-04-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-05-01 00:00:00'::timestamp without time zone)))
 )
 INHERITS (payment);
 
 
-ALTER TABLE payment_p2016_04 OWNER TO postgres;
+ALTER TABLE payment_p2017_04 OWNER TO postgres;
 
 --
--- Name: payment_p2016_05; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_05; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE payment_p2016_05 (
-    CONSTRAINT payment_p2016_05_payment_date_check CHECK (((payment_date >= '2016-05-01 00:00:00'::timestamp without time zone) AND (payment_date < '2016-06-01 00:00:00'::timestamp without time zone)))
+CREATE TABLE payment_p2017_05 (
+    CONSTRAINT payment_p2017_05_payment_date_check CHECK (((payment_date >= '2017-05-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-06-01 00:00:00'::timestamp without time zone)))
 )
 INHERITS (payment);
 
 
-ALTER TABLE payment_p2016_05 OWNER TO postgres;
+ALTER TABLE payment_p2017_05 OWNER TO postgres;
 
 --
--- Name: payment_p2016_06; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_06; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE payment_p2016_06 (
-    CONSTRAINT payment_p2016_06_payment_date_check CHECK (((payment_date >= '2016-06-01 00:00:00'::timestamp without time zone) AND (payment_date < '2016-07-01 00:00:00'::timestamp without time zone)))
+CREATE TABLE payment_p2017_06 (
+    CONSTRAINT payment_p2017_06_payment_date_check CHECK (((payment_date >= '2017-06-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-07-01 00:00:00'::timestamp without time zone)))
 )
 INHERITS (payment);
 
 
-ALTER TABLE payment_p2016_06 OWNER TO postgres;
+ALTER TABLE payment_p2017_06 OWNER TO postgres;
 
 --
 -- Name: rental_rental_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -999,42 +999,42 @@ ALTER TABLE staff_list OWNER TO postgres;
 -- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_01 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
+ALTER TABLE ONLY payment_p2017_01 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
 -- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_02 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
+ALTER TABLE ONLY payment_p2017_02 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
 -- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_03 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
+ALTER TABLE ONLY payment_p2017_03 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
 -- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_04 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
+ALTER TABLE ONLY payment_p2017_04 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
 -- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_05 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
+ALTER TABLE ONLY payment_p2017_05 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
 -- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_06 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
+ALTER TABLE ONLY payment_p2017_06 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
@@ -1228,87 +1228,87 @@ CREATE INDEX idx_fk_original_language_id ON film USING btree (original_language_
 
 
 --
--- Name: idx_fk_payment_p2016_01_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_01_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE INDEX idx_fk_payment_p2016_01_customer_id ON payment_p2016_01 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2016_01_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX idx_fk_payment_p2016_01_staff_id ON payment_p2016_01 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2017_01_customer_id ON payment_p2017_01 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2016_02_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_01_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE INDEX idx_fk_payment_p2016_02_customer_id ON payment_p2016_02 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2016_02_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX idx_fk_payment_p2016_02_staff_id ON payment_p2016_02 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2017_01_staff_id ON payment_p2017_01 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2016_03_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_02_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE INDEX idx_fk_payment_p2016_03_customer_id ON payment_p2016_03 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2016_03_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX idx_fk_payment_p2016_03_staff_id ON payment_p2016_03 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2017_02_customer_id ON payment_p2017_02 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2016_04_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_02_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE INDEX idx_fk_payment_p2016_04_customer_id ON payment_p2016_04 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2016_04_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX idx_fk_payment_p2016_04_staff_id ON payment_p2016_04 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2017_02_staff_id ON payment_p2017_02 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2016_05_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_03_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE INDEX idx_fk_payment_p2016_05_customer_id ON payment_p2016_05 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2016_05_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX idx_fk_payment_p2016_05_staff_id ON payment_p2016_05 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2017_03_customer_id ON payment_p2017_03 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2016_06_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_03_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE INDEX idx_fk_payment_p2016_06_customer_id ON payment_p2016_06 USING btree (customer_id);
+CREATE INDEX idx_fk_payment_p2017_03_staff_id ON payment_p2017_03 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2016_06_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_04_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE INDEX idx_fk_payment_p2016_06_staff_id ON payment_p2016_06 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2017_04_customer_id ON payment_p2017_04 USING btree (customer_id);
+
+
+--
+-- Name: idx_fk_payment_p2017_04_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX idx_fk_payment_p2017_04_staff_id ON payment_p2017_04 USING btree (staff_id);
+
+
+--
+-- Name: idx_fk_payment_p2017_05_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX idx_fk_payment_p2017_05_customer_id ON payment_p2017_05 USING btree (customer_id);
+
+
+--
+-- Name: idx_fk_payment_p2017_05_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX idx_fk_payment_p2017_05_staff_id ON payment_p2017_05 USING btree (staff_id);
+
+
+--
+-- Name: idx_fk_payment_p2017_06_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX idx_fk_payment_p2017_06_customer_id ON payment_p2017_06 USING btree (customer_id);
+
+
+--
+-- Name: idx_fk_payment_p2017_06_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX idx_fk_payment_p2017_06_staff_id ON payment_p2017_06 USING btree (staff_id);
 
 
 --
@@ -1577,147 +1577,147 @@ ALTER TABLE ONLY payment
 
 
 --
--- Name: payment_p2016_01_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_01_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_01
-    ADD CONSTRAINT payment_p2016_01_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2016_01_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2016_01
-    ADD CONSTRAINT payment_p2016_01_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
+ALTER TABLE ONLY payment_p2017_01
+    ADD CONSTRAINT payment_p2017_01_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
 
 
 --
--- Name: payment_p2016_01_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_01_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_01
-    ADD CONSTRAINT payment_p2016_01_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment_p2016_02_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2016_02
-    ADD CONSTRAINT payment_p2016_02_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+ALTER TABLE ONLY payment_p2017_01
+    ADD CONSTRAINT payment_p2017_01_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
 
 
 --
--- Name: payment_p2016_02_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_01_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_02
-    ADD CONSTRAINT payment_p2016_02_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
-
-
---
--- Name: payment_p2016_02_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2016_02
-    ADD CONSTRAINT payment_p2016_02_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
+ALTER TABLE ONLY payment_p2017_01
+    ADD CONSTRAINT payment_p2017_01_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
 
 
 --
--- Name: payment_p2016_03_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_02_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_03
-    ADD CONSTRAINT payment_p2016_03_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2016_03_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2016_03
-    ADD CONSTRAINT payment_p2016_03_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
+ALTER TABLE ONLY payment_p2017_02
+    ADD CONSTRAINT payment_p2017_02_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
 
 
 --
--- Name: payment_p2016_03_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_02_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_03
-    ADD CONSTRAINT payment_p2016_03_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment_p2016_04_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2016_04
-    ADD CONSTRAINT payment_p2016_04_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+ALTER TABLE ONLY payment_p2017_02
+    ADD CONSTRAINT payment_p2017_02_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
 
 
 --
--- Name: payment_p2016_04_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_02_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_04
-    ADD CONSTRAINT payment_p2016_04_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
-
-
---
--- Name: payment_p2016_04_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2016_04
-    ADD CONSTRAINT payment_p2016_04_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
+ALTER TABLE ONLY payment_p2017_02
+    ADD CONSTRAINT payment_p2017_02_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
 
 
 --
--- Name: payment_p2016_05_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_03_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_05
-    ADD CONSTRAINT payment_p2016_05_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2016_05_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2016_05
-    ADD CONSTRAINT payment_p2016_05_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
+ALTER TABLE ONLY payment_p2017_03
+    ADD CONSTRAINT payment_p2017_03_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
 
 
 --
--- Name: payment_p2016_05_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_03_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_05
-    ADD CONSTRAINT payment_p2016_05_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment_p2016_06_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2016_06
-    ADD CONSTRAINT payment_p2016_06_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+ALTER TABLE ONLY payment_p2017_03
+    ADD CONSTRAINT payment_p2017_03_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
 
 
 --
--- Name: payment_p2016_06_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_03_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_06
-    ADD CONSTRAINT payment_p2016_06_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
+ALTER TABLE ONLY payment_p2017_03
+    ADD CONSTRAINT payment_p2017_03_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
 
 
 --
--- Name: payment_p2016_06_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_04_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payment_p2016_06
-    ADD CONSTRAINT payment_p2016_06_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
+ALTER TABLE ONLY payment_p2017_04
+    ADD CONSTRAINT payment_p2017_04_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+
+
+--
+-- Name: payment_p2017_04_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2017_04
+    ADD CONSTRAINT payment_p2017_04_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
+
+
+--
+-- Name: payment_p2017_04_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2017_04
+    ADD CONSTRAINT payment_p2017_04_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
+
+
+--
+-- Name: payment_p2017_05_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2017_05
+    ADD CONSTRAINT payment_p2017_05_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+
+
+--
+-- Name: payment_p2017_05_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2017_05
+    ADD CONSTRAINT payment_p2017_05_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
+
+
+--
+-- Name: payment_p2017_05_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2017_05
+    ADD CONSTRAINT payment_p2017_05_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
+
+
+--
+-- Name: payment_p2017_06_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2017_06
+    ADD CONSTRAINT payment_p2017_06_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+
+
+--
+-- Name: payment_p2017_06_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2017_06
+    ADD CONSTRAINT payment_p2017_06_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
+
+
+--
+-- Name: payment_p2017_06_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2017_06
+    ADD CONSTRAINT payment_p2017_06_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
 
 
 --
