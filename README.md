@@ -57,7 +57,7 @@ trouble using one version or another.
 VERSION HISTORY
 ---------------
 
-Version 0.11.0
+Version 2.0
 * Update schema for newer PostgreSQL versions
 * Remove RULE for partitioning, add trigger support.
 * Update years in sample data. 

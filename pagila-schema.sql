@@ -2,12 +2,17 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.6.3
+-- Dumped by pg_dump version 10beta1
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
@@ -239,36 +244,6 @@ END $$;
 ALTER FUNCTION public.last_updated() OWNER TO postgres;
 
 --
--- Name: pagila_payment_insert_trigger(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION pagila_payment_insert_trigger() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-	IF (NEW.tarih >= '2017-01-01' AND NEW.tarih < '2017-02-01' ) THEN
-		INSERT INTO payment_p2017_01 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2017-02-01' AND NEW.tarih < '2017-03-01' ) THEN
-                INSERT INTO payment_p2017_02 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2017-03-01' AND NEW.tarih < '2017-04-01' ) THEN
-                INSERT INTO payment_p2017_03 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2017-04-01' AND NEW.tarih < '2017-05-01' ) THEN
-                INSERT INTO payment_p2017_04 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2017-05-01' AND NEW.tarih < '2017-06-01' ) THEN
-                INSERT INTO payment_p2017_05 VALUES (NEW.*);
-	ELSIF (NEW.tarih >= '2017-06-01' AND NEW.tarih < '2017-07-01' ) THEN
-                INSERT INTO payment_p2017_06 VALUES (NEW.*);
-	ELSE
-            	RAISE EXCEPTION 'Missing partition!' ;
-        END IF;
-        RETURN NULL;
-END;
-$$;
-
-
-ALTER FUNCTION public.pagila_payment_insert_trigger() OWNER TO postgres;
-
---
 -- Name: customer_customer_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -287,7 +262,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: customer; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: customer; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE customer (
@@ -397,7 +372,7 @@ CREATE SEQUENCE actor_actor_id_seq
 ALTER TABLE actor_actor_id_seq OWNER TO postgres;
 
 --
--- Name: actor; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: actor; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE actor (
@@ -425,7 +400,7 @@ CREATE SEQUENCE category_category_id_seq
 ALTER TABLE category_category_id_seq OWNER TO postgres;
 
 --
--- Name: category; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: category; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE category (
@@ -452,7 +427,7 @@ CREATE SEQUENCE film_film_id_seq
 ALTER TABLE film_film_id_seq OWNER TO postgres;
 
 --
--- Name: film; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: film; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE film (
@@ -476,7 +451,7 @@ CREATE TABLE film (
 ALTER TABLE film OWNER TO postgres;
 
 --
--- Name: film_actor; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: film_actor; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE film_actor (
@@ -489,7 +464,7 @@ CREATE TABLE film_actor (
 ALTER TABLE film_actor OWNER TO postgres;
 
 --
--- Name: film_category; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: film_category; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE film_category (
@@ -539,7 +514,7 @@ CREATE SEQUENCE address_address_id_seq
 ALTER TABLE address_address_id_seq OWNER TO postgres;
 
 --
--- Name: address; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: address; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE address (
@@ -571,7 +546,7 @@ CREATE SEQUENCE city_city_id_seq
 ALTER TABLE city_city_id_seq OWNER TO postgres;
 
 --
--- Name: city; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: city; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE city (
@@ -599,7 +574,7 @@ CREATE SEQUENCE country_country_id_seq
 ALTER TABLE country_country_id_seq OWNER TO postgres;
 
 --
--- Name: country; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: country; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE country (
@@ -674,7 +649,7 @@ CREATE SEQUENCE inventory_inventory_id_seq
 ALTER TABLE inventory_inventory_id_seq OWNER TO postgres;
 
 --
--- Name: inventory; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventory; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE inventory (
@@ -702,7 +677,7 @@ CREATE SEQUENCE language_language_id_seq
 ALTER TABLE language_language_id_seq OWNER TO postgres;
 
 --
--- Name: language; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: language; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE language (
@@ -752,7 +727,7 @@ CREATE SEQUENCE payment_payment_id_seq
 ALTER TABLE payment_payment_id_seq OWNER TO postgres;
 
 --
--- Name: payment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE payment (
@@ -768,7 +743,7 @@ CREATE TABLE payment (
 ALTER TABLE payment OWNER TO postgres;
 
 --
--- Name: payment_p2017_01; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_01; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE payment_p2017_01 (
@@ -780,7 +755,7 @@ INHERITS (payment);
 ALTER TABLE payment_p2017_01 OWNER TO postgres;
 
 --
--- Name: payment_p2017_02; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_02; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE payment_p2017_02 (
@@ -792,7 +767,7 @@ INHERITS (payment);
 ALTER TABLE payment_p2017_02 OWNER TO postgres;
 
 --
--- Name: payment_p2017_03; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_03; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE payment_p2017_03 (
@@ -804,7 +779,7 @@ INHERITS (payment);
 ALTER TABLE payment_p2017_03 OWNER TO postgres;
 
 --
--- Name: payment_p2017_04; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_04; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE payment_p2017_04 (
@@ -816,7 +791,7 @@ INHERITS (payment);
 ALTER TABLE payment_p2017_04 OWNER TO postgres;
 
 --
--- Name: payment_p2017_05; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_05; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE payment_p2017_05 (
@@ -828,7 +803,7 @@ INHERITS (payment);
 ALTER TABLE payment_p2017_05 OWNER TO postgres;
 
 --
--- Name: payment_p2017_06; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_p2017_06; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE payment_p2017_06 (
@@ -854,7 +829,7 @@ CREATE SEQUENCE rental_rental_id_seq
 ALTER TABLE rental_rental_id_seq OWNER TO postgres;
 
 --
--- Name: rental; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: rental; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE rental (
@@ -884,7 +859,7 @@ CREATE VIEW sales_by_film_category AS
      JOIN film_category fc ON ((f.film_id = fc.film_id)))
      JOIN category c ON ((fc.category_id = c.category_id)))
   GROUP BY c.name
-  ORDER BY sum(p.amount) DESC;
+  ORDER BY (sum(p.amount)) DESC;
 
 
 ALTER TABLE sales_by_film_category OWNER TO postgres;
@@ -904,7 +879,7 @@ CREATE SEQUENCE staff_staff_id_seq
 ALTER TABLE staff_staff_id_seq OWNER TO postgres;
 
 --
--- Name: staff; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: staff; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE staff (
@@ -939,7 +914,7 @@ CREATE SEQUENCE store_store_id_seq
 ALTER TABLE store_store_id_seq OWNER TO postgres;
 
 --
--- Name: store; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: store; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE store (
@@ -996,49 +971,49 @@ CREATE VIEW staff_list AS
 ALTER TABLE staff_list OWNER TO postgres;
 
 --
--- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: payment_p2017_01 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_01 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
--- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: payment_p2017_02 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_02 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
--- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: payment_p2017_03 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_03 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
--- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: payment_p2017_04 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_04 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
--- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: payment_p2017_05 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_05 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
--- Name: payment_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: payment_p2017_06 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_06 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
 
 
 --
--- Name: actor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: actor actor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY actor
@@ -1046,7 +1021,7 @@ ALTER TABLE ONLY actor
 
 
 --
--- Name: address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: address address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY address
@@ -1054,7 +1029,7 @@ ALTER TABLE ONLY address
 
 
 --
--- Name: category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: category category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY category
@@ -1062,7 +1037,7 @@ ALTER TABLE ONLY category
 
 
 --
--- Name: city_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: city city_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY city
@@ -1070,7 +1045,7 @@ ALTER TABLE ONLY city
 
 
 --
--- Name: country_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: country country_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY country
@@ -1078,7 +1053,7 @@ ALTER TABLE ONLY country
 
 
 --
--- Name: customer_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: customer customer_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY customer
@@ -1086,7 +1061,7 @@ ALTER TABLE ONLY customer
 
 
 --
--- Name: film_actor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: film_actor film_actor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film_actor
@@ -1094,7 +1069,7 @@ ALTER TABLE ONLY film_actor
 
 
 --
--- Name: film_category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: film_category film_category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film_category
@@ -1102,7 +1077,7 @@ ALTER TABLE ONLY film_category
 
 
 --
--- Name: film_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: film film_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film
@@ -1110,7 +1085,7 @@ ALTER TABLE ONLY film
 
 
 --
--- Name: inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventory inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY inventory
@@ -1118,7 +1093,7 @@ ALTER TABLE ONLY inventory
 
 
 --
--- Name: language_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: language language_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY language
@@ -1126,7 +1101,7 @@ ALTER TABLE ONLY language
 
 
 --
--- Name: payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment
@@ -1134,7 +1109,7 @@ ALTER TABLE ONLY payment
 
 
 --
--- Name: rental_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: rental rental_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY rental
@@ -1142,7 +1117,7 @@ ALTER TABLE ONLY rental
 
 
 --
--- Name: staff_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: staff staff_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY staff
@@ -1150,7 +1125,7 @@ ALTER TABLE ONLY staff
 
 
 --
--- Name: store_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: store store_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY store
@@ -1158,322 +1133,375 @@ ALTER TABLE ONLY store
 
 
 --
--- Name: film_fulltext_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: film_fulltext_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX film_fulltext_idx ON film USING gist (fulltext);
 
 
 --
--- Name: idx_actor_last_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_actor_last_name; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_actor_last_name ON actor USING btree (last_name);
 
 
 --
--- Name: idx_fk_address_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_address_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_address_id ON customer USING btree (address_id);
 
 
 --
--- Name: idx_fk_city_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_city_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_city_id ON address USING btree (city_id);
 
 
 --
--- Name: idx_fk_country_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_country_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_country_id ON city USING btree (country_id);
 
 
 --
--- Name: idx_fk_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_customer_id ON payment USING btree (customer_id);
 
 
 --
--- Name: idx_fk_film_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_film_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_film_id ON film_actor USING btree (film_id);
 
 
 --
--- Name: idx_fk_inventory_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_inventory_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_inventory_id ON rental USING btree (inventory_id);
 
 
 --
--- Name: idx_fk_language_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_language_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_language_id ON film USING btree (language_id);
 
 
 --
--- Name: idx_fk_original_language_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_original_language_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_original_language_id ON film USING btree (original_language_id);
 
 
 --
--- Name: idx_fk_payment_p2017_01_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_01_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_01_customer_id ON payment_p2017_01 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_01_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_01_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_01_staff_id ON payment_p2017_01 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2017_02_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_02_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_02_customer_id ON payment_p2017_02 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_02_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_02_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_02_staff_id ON payment_p2017_02 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2017_03_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_03_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_03_customer_id ON payment_p2017_03 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_03_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_03_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_03_staff_id ON payment_p2017_03 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2017_04_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_04_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_04_customer_id ON payment_p2017_04 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_04_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_04_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_04_staff_id ON payment_p2017_04 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2017_05_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_05_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_05_customer_id ON payment_p2017_05 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_05_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_05_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_05_staff_id ON payment_p2017_05 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2017_06_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_06_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_06_customer_id ON payment_p2017_06 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_06_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_payment_p2017_06_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_payment_p2017_06_staff_id ON payment_p2017_06 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_staff_id ON payment USING btree (staff_id);
 
 
 --
--- Name: idx_fk_store_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_fk_store_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_fk_store_id ON customer USING btree (store_id);
 
 
 --
--- Name: idx_last_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_last_name; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_last_name ON customer USING btree (last_name);
 
 
 --
--- Name: idx_store_id_film_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_store_id_film_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_store_id_film_id ON inventory USING btree (store_id, film_id);
 
 
 --
--- Name: idx_title; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_title; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_title ON film USING btree (title);
 
 
 --
--- Name: idx_unq_manager_staff_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_unq_manager_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE UNIQUE INDEX idx_unq_manager_staff_id ON store USING btree (manager_staff_id);
 
 
 --
--- Name: idx_unq_rental_rental_date_inventory_id_customer_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: idx_unq_rental_rental_date_inventory_id_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE UNIQUE INDEX idx_unq_rental_rental_date_inventory_id_customer_id ON rental USING btree (rental_date, inventory_id, customer_id);
 
 
 --
--- Name: film_fulltext_trigger; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: payment payment_insert_p2017_01; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE payment_insert_p2017_01 AS
+    ON INSERT TO payment
+   WHERE ((new.payment_date >= '2017-01-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-02-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_01 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
+  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
+
+
+--
+-- Name: payment payment_insert_p2017_02; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE payment_insert_p2017_02 AS
+    ON INSERT TO payment
+   WHERE ((new.payment_date >= '2017-02-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-03-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_02 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
+  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
+
+
+--
+-- Name: payment payment_insert_p2017_03; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE payment_insert_p2017_03 AS
+    ON INSERT TO payment
+   WHERE ((new.payment_date >= '2017-03-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-04-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_03 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
+  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
+
+
+--
+-- Name: payment payment_insert_p2017_04; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE payment_insert_p2017_04 AS
+    ON INSERT TO payment
+   WHERE ((new.payment_date >= '2017-04-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-05-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_04 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
+  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
+
+
+--
+-- Name: payment payment_insert_p2017_05; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE payment_insert_p2017_05 AS
+    ON INSERT TO payment
+   WHERE ((new.payment_date >= '2017-05-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-06-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_05 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
+  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
+
+
+--
+-- Name: payment payment_insert_p2017_06; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE payment_insert_p2017_06 AS
+    ON INSERT TO payment
+   WHERE ((new.payment_date >= '2017-06-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-07-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_06 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
+  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
+
+
+--
+-- Name: film film_fulltext_trigger; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER film_fulltext_trigger BEFORE INSERT OR UPDATE ON film FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('fulltext', 'pg_catalog.english', 'title', 'description');
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: actor last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON actor FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: address last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON address FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: category last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON category FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: city last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON city FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: country last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON country FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: customer last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON customer FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: film last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON film FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: film_actor last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON film_actor FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: film_category last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON film_category FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: inventory last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON inventory FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: language last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON language FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: rental last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON rental FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: staff last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON staff FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: last_updated; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: store last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON store FOR EACH ROW EXECUTE PROCEDURE last_updated();
 
 
 --
--- Name: pagila_payment_insert_trigger; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER pagila_payment_insert_trigger BEFORE INSERT ON payment FOR EACH ROW EXECUTE PROCEDURE pagila_payment_insert_trigger();
-
-
---
--- Name: address_city_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: address address_city_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY address
@@ -1481,7 +1509,7 @@ ALTER TABLE ONLY address
 
 
 --
--- Name: city_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: city city_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY city
@@ -1489,7 +1517,7 @@ ALTER TABLE ONLY city
 
 
 --
--- Name: customer_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: customer customer_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY customer
@@ -1497,7 +1525,7 @@ ALTER TABLE ONLY customer
 
 
 --
--- Name: customer_store_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: customer customer_store_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY customer
@@ -1505,7 +1533,7 @@ ALTER TABLE ONLY customer
 
 
 --
--- Name: film_actor_actor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: film_actor film_actor_actor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film_actor
@@ -1513,7 +1541,7 @@ ALTER TABLE ONLY film_actor
 
 
 --
--- Name: film_actor_film_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: film_actor film_actor_film_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film_actor
@@ -1521,7 +1549,7 @@ ALTER TABLE ONLY film_actor
 
 
 --
--- Name: film_category_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: film_category film_category_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film_category
@@ -1529,7 +1557,7 @@ ALTER TABLE ONLY film_category
 
 
 --
--- Name: film_category_film_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: film_category film_category_film_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film_category
@@ -1537,7 +1565,7 @@ ALTER TABLE ONLY film_category
 
 
 --
--- Name: film_language_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: film film_language_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film
@@ -1545,7 +1573,7 @@ ALTER TABLE ONLY film
 
 
 --
--- Name: film_original_language_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: film film_original_language_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY film
@@ -1553,7 +1581,7 @@ ALTER TABLE ONLY film
 
 
 --
--- Name: inventory_film_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inventory inventory_film_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY inventory
@@ -1561,7 +1589,7 @@ ALTER TABLE ONLY inventory
 
 
 --
--- Name: inventory_store_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inventory inventory_store_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY inventory
@@ -1569,7 +1597,7 @@ ALTER TABLE ONLY inventory
 
 
 --
--- Name: payment_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment payment_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment
@@ -1577,7 +1605,7 @@ ALTER TABLE ONLY payment
 
 
 --
--- Name: payment_p2017_01_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_01 payment_p2017_01_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_01
@@ -1585,7 +1613,7 @@ ALTER TABLE ONLY payment_p2017_01
 
 
 --
--- Name: payment_p2017_01_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_01 payment_p2017_01_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_01
@@ -1593,7 +1621,7 @@ ALTER TABLE ONLY payment_p2017_01
 
 
 --
--- Name: payment_p2017_01_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_01 payment_p2017_01_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_01
@@ -1601,7 +1629,7 @@ ALTER TABLE ONLY payment_p2017_01
 
 
 --
--- Name: payment_p2017_02_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_02 payment_p2017_02_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_02
@@ -1609,7 +1637,7 @@ ALTER TABLE ONLY payment_p2017_02
 
 
 --
--- Name: payment_p2017_02_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_02 payment_p2017_02_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_02
@@ -1617,7 +1645,7 @@ ALTER TABLE ONLY payment_p2017_02
 
 
 --
--- Name: payment_p2017_02_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_02 payment_p2017_02_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_02
@@ -1625,7 +1653,7 @@ ALTER TABLE ONLY payment_p2017_02
 
 
 --
--- Name: payment_p2017_03_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_03 payment_p2017_03_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_03
@@ -1633,7 +1661,7 @@ ALTER TABLE ONLY payment_p2017_03
 
 
 --
--- Name: payment_p2017_03_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_03 payment_p2017_03_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_03
@@ -1641,7 +1669,7 @@ ALTER TABLE ONLY payment_p2017_03
 
 
 --
--- Name: payment_p2017_03_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_03 payment_p2017_03_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_03
@@ -1649,7 +1677,7 @@ ALTER TABLE ONLY payment_p2017_03
 
 
 --
--- Name: payment_p2017_04_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_04 payment_p2017_04_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_04
@@ -1657,7 +1685,7 @@ ALTER TABLE ONLY payment_p2017_04
 
 
 --
--- Name: payment_p2017_04_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_04 payment_p2017_04_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_04
@@ -1665,7 +1693,7 @@ ALTER TABLE ONLY payment_p2017_04
 
 
 --
--- Name: payment_p2017_04_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_04 payment_p2017_04_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_04
@@ -1673,7 +1701,7 @@ ALTER TABLE ONLY payment_p2017_04
 
 
 --
--- Name: payment_p2017_05_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_05 payment_p2017_05_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_05
@@ -1681,7 +1709,7 @@ ALTER TABLE ONLY payment_p2017_05
 
 
 --
--- Name: payment_p2017_05_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_05 payment_p2017_05_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_05
@@ -1689,7 +1717,7 @@ ALTER TABLE ONLY payment_p2017_05
 
 
 --
--- Name: payment_p2017_05_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_05 payment_p2017_05_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_05
@@ -1697,7 +1725,7 @@ ALTER TABLE ONLY payment_p2017_05
 
 
 --
--- Name: payment_p2017_06_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_06 payment_p2017_06_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_06
@@ -1705,7 +1733,7 @@ ALTER TABLE ONLY payment_p2017_06
 
 
 --
--- Name: payment_p2017_06_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_06 payment_p2017_06_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_06
@@ -1713,7 +1741,7 @@ ALTER TABLE ONLY payment_p2017_06
 
 
 --
--- Name: payment_p2017_06_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment_p2017_06 payment_p2017_06_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment_p2017_06
@@ -1721,7 +1749,7 @@ ALTER TABLE ONLY payment_p2017_06
 
 
 --
--- Name: payment_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment payment_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment
@@ -1729,7 +1757,7 @@ ALTER TABLE ONLY payment
 
 
 --
--- Name: payment_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payment payment_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY payment
@@ -1737,7 +1765,7 @@ ALTER TABLE ONLY payment
 
 
 --
--- Name: rental_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: rental rental_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY rental
@@ -1745,7 +1773,7 @@ ALTER TABLE ONLY rental
 
 
 --
--- Name: rental_inventory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: rental rental_inventory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY rental
@@ -1753,7 +1781,7 @@ ALTER TABLE ONLY rental
 
 
 --
--- Name: rental_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: rental rental_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY rental
@@ -1761,7 +1789,7 @@ ALTER TABLE ONLY rental
 
 
 --
--- Name: staff_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: staff staff_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY staff
@@ -1769,7 +1797,7 @@ ALTER TABLE ONLY staff
 
 
 --
--- Name: staff_store_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: staff staff_store_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY staff
@@ -1777,29 +1805,11 @@ ALTER TABLE ONLY staff
 
 
 --
--- Name: store_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: store store_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY store
     ADD CONSTRAINT store_address_id_fkey FOREIGN KEY (address_id) REFERENCES address(address_id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
--- Name: store_manager_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY store
-    ADD CONSTRAINT store_manager_staff_id_fkey FOREIGN KEY (manager_staff_id) REFERENCES staff(staff_id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: postgres
---
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
