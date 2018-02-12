@@ -30357,14 +30357,6 @@ COPY rental (rental_id, rental_date, inventory_id, customer_id, return_date, sta
 --
 
 COPY payment (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
-\.
-
-
---
--- Data for Name: payment_p2017_01; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2017_01 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 16050	269	2	7	1.99	2017-01-24 21:40:19.996577
 16051	269	1	98	0.99	2017-01-25 15:16:50.996577
 16052	269	2	678	6.99	2017-01-28 21:44:14.996577
@@ -31522,14 +31514,6 @@ COPY payment_p2017_01 (payment_id, customer_id, staff_id, rental_id, amount, pay
 17204	267	1	436	4.99	2017-01-27 15:49:30.996577
 17205	267	2	1030	4.99	2017-01-31 02:35:13.996577
 17206	577	2	4591	0.99	2017-01-26 23:15:05.996577
-\.
-
-
---
--- Data for Name: payment_p2017_02; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2017_02 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 17207	268	1	1394	2.99	2017-02-15 14:45:47.996577
 17208	268	2	1450	4.99	2017-02-15 17:50:34.996577
 17209	268	2	1551	3.99	2017-02-16 00:29:41.996577
@@ -33842,14 +33826,6 @@ COPY payment_p2017_02 (payment_id, customer_id, staff_id, rental_id, amount, pay
 19516	267	1	2877	1.99	2017-02-19 23:35:42.996577
 19517	267	2	3090	0.99	2017-02-20 14:28:45.996577
 19518	16	1	4591	1.99	2017-02-18 03:24:38.996577
-\.
-
-
---
--- Data for Name: payment_p2017_03; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2017_03 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 19519	267	1	10343	2.99	2017-03-01 03:44:13.996577
 19520	267	2	11373	0.99	2017-03-02 16:42:38.996577
 19521	267	1	11690	6.99	2017-03-17 05:12:48.996577
@@ -39494,14 +39470,6 @@ COPY payment_p2017_03 (payment_id, customer_id, staff_id, rental_id, amount, pay
 25160	266	1	15181	2.99	2017-03-22 14:14:46.996577
 25161	266	1	15346	4.99	2017-03-22 19:34:26.996577
 25162	259	2	4591	1.99	2017-03-23 04:41:42.996577
-\.
-
-
---
--- Data for Name: payment_p2017_04; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2017_04 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 25163	267	2	9807	2.99	2017-04-30 09:42:18.996577
 25164	267	2	10048	4.99	2017-04-30 17:37:22.996577
 25165	268	2	3670	4.99	2017-04-06 07:25:09.996577
@@ -46256,14 +46224,6 @@ COPY payment_p2017_04 (payment_id, customer_id, staff_id, rental_id, amount, pay
 31914	267	1	6706	3.99	2017-04-12 11:27:42.996577
 31915	267	1	8190	4.99	2017-04-28 21:15:32.996577
 31916	267	1	8572	1.99	2017-04-29 10:19:50.996577
-\.
-
-
---
--- Data for Name: payment_p2017_05; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2017_05 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 31917	267	2	12066	7.98	2017-05-14 13:44:29.996577
 31918	267	2	13713	0.00	2017-05-14 13:44:29.996577
 31919	269	1	13025	3.98	2017-05-14 13:44:29.996577
@@ -46446,14 +46406,6 @@ COPY payment_p2017_05 (payment_id, customer_id, staff_id, rental_id, amount, pay
 32096	252	2	13756	4.99	2017-05-14 13:44:29.996577
 32097	263	1	15293	0.99	2017-05-14 13:44:29.996577
 32098	264	2	14243	2.99	2017-05-14 13:44:29.996577
-\.
-
-
---
--- Data for Name: payment_p2017_06; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2017_06 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 \.
 
 
