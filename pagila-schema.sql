@@ -107,10 +107,10 @@ $_$;
 ALTER FUNCTION public.film_not_in_stock(p_film_id integer, p_store_id integer, OUT p_film_count integer) OWNER TO postgres;
 
 --
--- Name: get_customer_balance(integer, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_customer_balance(integer, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION get_customer_balance(p_customer_id integer, p_effective_date timestamp without time zone) RETURNS numeric
+CREATE FUNCTION get_customer_balance(p_customer_id integer, p_effective_date timestamp with time zone) RETURNS numeric
     LANGUAGE plpgsql
     AS $$
        --#OK, WE NEED TO CALCULATE THE CURRENT BALANCE GIVEN A CUSTOMER_ID AND A DATE
@@ -149,7 +149,7 @@ END
 $$;
 
 
-ALTER FUNCTION public.get_customer_balance(p_customer_id integer, p_effective_date timestamp without time zone) OWNER TO postgres;
+ALTER FUNCTION public.get_customer_balance(p_customer_id integer, p_effective_date timestamp with time zone) OWNER TO postgres;
 
 --
 -- Name: inventory_held_by_customer(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -211,10 +211,10 @@ END $$;
 ALTER FUNCTION public.inventory_in_stock(p_inventory_id integer) OWNER TO postgres;
 
 --
--- Name: last_day(timestamp without time zone); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: last_day(timestamp with time zone); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION last_day(timestamp without time zone) RETURNS date
+CREATE FUNCTION last_day(timestamp with time zone) RETURNS date
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
   SELECT CASE
@@ -226,7 +226,7 @@ CREATE FUNCTION last_day(timestamp without time zone) RETURNS date
 $_$;
 
 
-ALTER FUNCTION public.last_day(timestamp without time zone) OWNER TO postgres;
+ALTER FUNCTION public.last_day(timestamp with time zone) OWNER TO postgres;
 
 --
 -- Name: last_updated(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -266,7 +266,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE customer (
-    customer_id integer DEFAULT nextval('customer_customer_id_seq'::regclass) NOT NULL,
+    customer_id SERIAL PRIMARY KEY,
     store_id smallint NOT NULL,
     first_name character varying(45) NOT NULL,
     last_name character varying(45) NOT NULL,
@@ -274,7 +274,7 @@ CREATE TABLE customer (
     address_id smallint NOT NULL,
     activebool boolean DEFAULT true NOT NULL,
     create_date date DEFAULT ('now'::text)::date NOT NULL,
-    last_update timestamp without time zone DEFAULT now(),
+    last_update timestamp with time zone DEFAULT now(),
     active integer
 );
 
@@ -379,7 +379,7 @@ CREATE TABLE actor (
     actor_id integer DEFAULT nextval('actor_actor_id_seq'::regclass) NOT NULL,
     first_name character varying(45) NOT NULL,
     last_name character varying(45) NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -406,7 +406,7 @@ ALTER TABLE category_category_id_seq OWNER TO postgres;
 CREATE TABLE category (
     category_id integer DEFAULT nextval('category_category_id_seq'::regclass) NOT NULL,
     name character varying(25) NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -442,7 +442,7 @@ CREATE TABLE film (
     length smallint,
     replacement_cost numeric(5,2) DEFAULT 19.99 NOT NULL,
     rating mpaa_rating DEFAULT 'G'::mpaa_rating,
-    last_update timestamp without time zone DEFAULT now() NOT NULL,
+    last_update timestamp with time zone DEFAULT now() NOT NULL,
     special_features text[],
     fulltext tsvector NOT NULL
 );
@@ -457,7 +457,7 @@ ALTER TABLE film OWNER TO postgres;
 CREATE TABLE film_actor (
     actor_id smallint NOT NULL,
     film_id smallint NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -470,7 +470,7 @@ ALTER TABLE film_actor OWNER TO postgres;
 CREATE TABLE film_category (
     film_id smallint NOT NULL,
     category_id smallint NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -525,7 +525,7 @@ CREATE TABLE address (
     city_id smallint NOT NULL,
     postal_code character varying(10),
     phone character varying(20) NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -553,7 +553,7 @@ CREATE TABLE city (
     city_id integer DEFAULT nextval('city_city_id_seq'::regclass) NOT NULL,
     city character varying(50) NOT NULL,
     country_id smallint NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -580,7 +580,7 @@ ALTER TABLE country_country_id_seq OWNER TO postgres;
 CREATE TABLE country (
     country_id integer DEFAULT nextval('country_country_id_seq'::regclass) NOT NULL,
     country character varying(50) NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -656,7 +656,7 @@ CREATE TABLE inventory (
     inventory_id integer DEFAULT nextval('inventory_inventory_id_seq'::regclass) NOT NULL,
     film_id smallint NOT NULL,
     store_id smallint NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -683,7 +683,7 @@ ALTER TABLE language_language_id_seq OWNER TO postgres;
 CREATE TABLE language (
     language_id integer DEFAULT nextval('language_language_id_seq'::regclass) NOT NULL,
     name character(20) NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -736,9 +736,8 @@ CREATE TABLE payment (
     staff_id smallint NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp without time zone NOT NULL
-);
-
+    payment_date timestamp with time zone NOT NULL
+) PARTITION BY RANGE(payment_date);
 
 ALTER TABLE payment OWNER TO postgres;
 
@@ -746,11 +745,8 @@ ALTER TABLE payment OWNER TO postgres;
 -- Name: payment_p2017_01; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_01 (
-    CONSTRAINT payment_p2017_01_payment_date_check CHECK (((payment_date >= '2017-01-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-02-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
-
+CREATE TABLE payment_p2017_01 PARTITION OF payment
+    FOR VALUES FROM ('2017-01-01 00:00:00+0:00') TO ('2017-02-01 00:00:00+0:00');
 
 ALTER TABLE payment_p2017_01 OWNER TO postgres;
 
@@ -758,11 +754,8 @@ ALTER TABLE payment_p2017_01 OWNER TO postgres;
 -- Name: payment_p2017_02; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_02 (
-    CONSTRAINT payment_p2017_02_payment_date_check CHECK (((payment_date >= '2017-02-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-03-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
-
+CREATE TABLE payment_p2017_02 PARTITION OF payment
+    FOR VALUES FROM ('2017-02-01 00:00:00+0:00') TO ('2017-03-01 00:00:00+0:00');
 
 ALTER TABLE payment_p2017_02 OWNER TO postgres;
 
@@ -770,10 +763,8 @@ ALTER TABLE payment_p2017_02 OWNER TO postgres;
 -- Name: payment_p2017_03; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_03 (
-    CONSTRAINT payment_p2017_03_payment_date_check CHECK (((payment_date >= '2017-03-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-04-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
+CREATE TABLE payment_p2017_03 PARTITION OF payment
+    FOR VALUES FROM ('2017-03-01 00:00:00+0:00') TO ('2017-04-01 00:00:00+0:00');
 
 
 ALTER TABLE payment_p2017_03 OWNER TO postgres;
@@ -782,11 +773,8 @@ ALTER TABLE payment_p2017_03 OWNER TO postgres;
 -- Name: payment_p2017_04; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_04 (
-    CONSTRAINT payment_p2017_04_payment_date_check CHECK (((payment_date >= '2017-04-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-05-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
-
+CREATE TABLE payment_p2017_04 PARTITION OF payment
+    FOR VALUES FROM ('2017-04-01 00:00:00+0:00') TO ('2017-05-01 00:00:00+0:00');
 
 ALTER TABLE payment_p2017_04 OWNER TO postgres;
 
@@ -794,11 +782,8 @@ ALTER TABLE payment_p2017_04 OWNER TO postgres;
 -- Name: payment_p2017_05; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_05 (
-    CONSTRAINT payment_p2017_05_payment_date_check CHECK (((payment_date >= '2017-05-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-06-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
-
+CREATE TABLE payment_p2017_05 PARTITION OF payment
+    FOR VALUES FROM ('2017-05-01 00:00:00+0:00') TO ('2017-06-01 00:00:00+0:00');
 
 ALTER TABLE payment_p2017_05 OWNER TO postgres;
 
@@ -806,10 +791,8 @@ ALTER TABLE payment_p2017_05 OWNER TO postgres;
 -- Name: payment_p2017_06; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_06 (
-    CONSTRAINT payment_p2017_06_payment_date_check CHECK (((payment_date >= '2017-06-01 00:00:00'::timestamp without time zone) AND (payment_date < '2017-07-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
+CREATE TABLE payment_p2017_06 PARTITION OF payment
+    FOR VALUES FROM ('2017-06-01 00:00:00+0:00') TO ('2017-07-01 00:00:00+0:00');
 
 
 ALTER TABLE payment_p2017_06 OWNER TO postgres;
@@ -834,12 +817,12 @@ ALTER TABLE rental_rental_id_seq OWNER TO postgres;
 
 CREATE TABLE rental (
     rental_id integer DEFAULT nextval('rental_rental_id_seq'::regclass) NOT NULL,
-    rental_date timestamp without time zone NOT NULL,
+    rental_date timestamp with time zone NOT NULL,
     inventory_id integer NOT NULL,
     customer_id smallint NOT NULL,
-    return_date timestamp without time zone,
+    return_date timestamp with time zone,
     staff_id smallint NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -892,7 +875,7 @@ CREATE TABLE staff (
     active boolean DEFAULT true NOT NULL,
     username character varying(16) NOT NULL,
     password character varying(40),
-    last_update timestamp without time zone DEFAULT now() NOT NULL,
+    last_update timestamp with time zone DEFAULT now() NOT NULL,
     picture bytea
 );
 
@@ -921,7 +904,7 @@ CREATE TABLE store (
     store_id integer DEFAULT nextval('store_store_id_seq'::regclass) NOT NULL,
     manager_staff_id smallint NOT NULL,
     address_id smallint NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -971,48 +954,6 @@ CREATE VIEW staff_list AS
 ALTER TABLE staff_list OWNER TO postgres;
 
 --
--- Name: payment_p2017_01 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_01 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2017_02 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_02 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2017_03 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_03 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2017_04 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_04 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2017_05 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_05 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2017_06 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_06 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
-
-
---
 -- Name: actor actor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1051,13 +992,6 @@ ALTER TABLE ONLY city
 ALTER TABLE ONLY country
     ADD CONSTRAINT country_pkey PRIMARY KEY (country_id);
 
-
---
--- Name: customer customer_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY customer
-    ADD CONSTRAINT customer_pkey PRIMARY KEY (customer_id);
 
 
 --
@@ -1098,14 +1032,6 @@ ALTER TABLE ONLY inventory
 
 ALTER TABLE ONLY language
     ADD CONSTRAINT language_pkey PRIMARY KEY (language_id);
-
-
---
--- Name: payment payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment
-    ADD CONSTRAINT payment_pkey PRIMARY KEY (payment_id);
 
 
 --
@@ -1334,67 +1260,6 @@ CREATE UNIQUE INDEX idx_unq_manager_staff_id ON store USING btree (manager_staff
 
 CREATE UNIQUE INDEX idx_unq_rental_rental_date_inventory_id_customer_id ON rental USING btree (rental_date, inventory_id, customer_id);
 
-
---
--- Name: payment payment_insert_p2017_01; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2017_01 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2017-01-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-02-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_01 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2017_02; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2017_02 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2017-02-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-03-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_02 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2017_03; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2017_03 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2017-03-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-04-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_03 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2017_04; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2017_04 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2017-04-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-05-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_04 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2017_05; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2017_05 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2017-05-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-06-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_05 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2017_06; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2017_06 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2017-06-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2017-07-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2017_06 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
 --
 -- Name: film film_fulltext_trigger; Type: TRIGGER; Schema: public; Owner: postgres
 --
@@ -1595,175 +1460,6 @@ ALTER TABLE ONLY inventory
 ALTER TABLE ONLY inventory
     ADD CONSTRAINT inventory_store_id_fkey FOREIGN KEY (store_id) REFERENCES store(store_id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
-
---
--- Name: payment payment_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment
-    ADD CONSTRAINT payment_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
--- Name: payment_p2017_01 payment_p2017_01_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_01
-    ADD CONSTRAINT payment_p2017_01_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2017_01 payment_p2017_01_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_01
-    ADD CONSTRAINT payment_p2017_01_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
-
-
---
--- Name: payment_p2017_01 payment_p2017_01_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_01
-    ADD CONSTRAINT payment_p2017_01_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment_p2017_02 payment_p2017_02_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_02
-    ADD CONSTRAINT payment_p2017_02_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2017_02 payment_p2017_02_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_02
-    ADD CONSTRAINT payment_p2017_02_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
-
-
---
--- Name: payment_p2017_02 payment_p2017_02_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_02
-    ADD CONSTRAINT payment_p2017_02_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment_p2017_03 payment_p2017_03_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_03
-    ADD CONSTRAINT payment_p2017_03_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2017_03 payment_p2017_03_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_03
-    ADD CONSTRAINT payment_p2017_03_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
-
-
---
--- Name: payment_p2017_03 payment_p2017_03_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_03
-    ADD CONSTRAINT payment_p2017_03_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment_p2017_04 payment_p2017_04_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_04
-    ADD CONSTRAINT payment_p2017_04_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2017_04 payment_p2017_04_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_04
-    ADD CONSTRAINT payment_p2017_04_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
-
-
---
--- Name: payment_p2017_04 payment_p2017_04_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_04
-    ADD CONSTRAINT payment_p2017_04_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment_p2017_05 payment_p2017_05_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_05
-    ADD CONSTRAINT payment_p2017_05_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2017_05 payment_p2017_05_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_05
-    ADD CONSTRAINT payment_p2017_05_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
-
-
---
--- Name: payment_p2017_05 payment_p2017_05_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_05
-    ADD CONSTRAINT payment_p2017_05_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment_p2017_06 payment_p2017_06_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_06
-    ADD CONSTRAINT payment_p2017_06_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
-
---
--- Name: payment_p2017_06 payment_p2017_06_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_06
-    ADD CONSTRAINT payment_p2017_06_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id);
-
-
---
--- Name: payment_p2017_06 payment_p2017_06_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment_p2017_06
-    ADD CONSTRAINT payment_p2017_06_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment payment_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment
-    ADD CONSTRAINT payment_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id) ON UPDATE CASCADE ON DELETE SET NULL;
-
-
---
--- Name: payment payment_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment
-    ADD CONSTRAINT payment_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
 --
 -- Name: rental rental_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
@@ -1816,3 +1512,33 @@ ALTER TABLE ONLY store
 -- PostgreSQL database dump complete
 --
 
+
+ALTER TABLE payment_p2017_01
+    ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
+    ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
+    ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
+
+ALTER TABLE payment_p2017_02
+    ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
+    ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
+    ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
+
+ALTER TABLE payment_p2017_03
+    ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
+    ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
+    ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
+
+ALTER TABLE payment_p2017_04
+    ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
+    ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
+    ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
+
+ALTER TABLE payment_p2017_05
+    ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
+    ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
+    ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
+
+ALTER TABLE payment_p2017_06
+    ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
+    ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
+    ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
