@@ -742,60 +742,60 @@ CREATE TABLE payment (
 ALTER TABLE payment OWNER TO postgres;
 
 --
--- Name: payment_p2017_01; Type: TABLE; Schema: public; Owner: postgres
+-- Name: payment_p2020_01; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_01 PARTITION OF payment
-    FOR VALUES FROM ('2017-01-01 00:00:00+0:00') TO ('2017-02-01 00:00:00+0:00');
+CREATE TABLE payment_p2020_01 PARTITION OF payment
+    FOR VALUES FROM ('2020-01-01 00:00:00+0:00') TO ('2020-02-01 00:00:00+0:00');
 
-ALTER TABLE payment_p2017_01 OWNER TO postgres;
-
---
--- Name: payment_p2017_02; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE payment_p2017_02 PARTITION OF payment
-    FOR VALUES FROM ('2017-02-01 00:00:00+0:00') TO ('2017-03-01 00:00:00+0:00');
-
-ALTER TABLE payment_p2017_02 OWNER TO postgres;
+ALTER TABLE payment_p2020_01 OWNER TO postgres;
 
 --
--- Name: payment_p2017_03; Type: TABLE; Schema: public; Owner: postgres
+-- Name: payment_p2020_02; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_03 PARTITION OF payment
-    FOR VALUES FROM ('2017-03-01 00:00:00+0:00') TO ('2017-04-01 00:00:00+0:00');
+CREATE TABLE payment_p2020_02 PARTITION OF payment
+    FOR VALUES FROM ('2020-02-01 00:00:00+0:00') TO ('2020-03-01 00:00:00+0:00');
 
-
-ALTER TABLE payment_p2017_03 OWNER TO postgres;
-
---
--- Name: payment_p2017_04; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE payment_p2017_04 PARTITION OF payment
-    FOR VALUES FROM ('2017-04-01 00:00:00+0:00') TO ('2017-05-01 00:00:00+0:00');
-
-ALTER TABLE payment_p2017_04 OWNER TO postgres;
+ALTER TABLE payment_p2020_02 OWNER TO postgres;
 
 --
--- Name: payment_p2017_05; Type: TABLE; Schema: public; Owner: postgres
+-- Name: payment_p2020_03; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_05 PARTITION OF payment
-    FOR VALUES FROM ('2017-05-01 00:00:00+0:00') TO ('2017-06-01 00:00:00+0:00');
+CREATE TABLE payment_p2020_03 PARTITION OF payment
+    FOR VALUES FROM ('2020-03-01 00:00:00+0:00') TO ('2020-04-01 00:00:00+0:00');
 
-ALTER TABLE payment_p2017_05 OWNER TO postgres;
+
+ALTER TABLE payment_p2020_03 OWNER TO postgres;
 
 --
--- Name: payment_p2017_06; Type: TABLE; Schema: public; Owner: postgres
+-- Name: payment_p2020_04; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2017_06 PARTITION OF payment
-    FOR VALUES FROM ('2017-06-01 00:00:00+0:00') TO ('2017-07-01 00:00:00+0:00');
+CREATE TABLE payment_p2020_04 PARTITION OF payment
+    FOR VALUES FROM ('2020-04-01 00:00:00+0:00') TO ('2020-05-01 00:00:00+0:00');
+
+ALTER TABLE payment_p2020_04 OWNER TO postgres;
+
+--
+-- Name: payment_p2020_05; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE payment_p2020_05 PARTITION OF payment
+    FOR VALUES FROM ('2020-05-01 00:00:00+0:00') TO ('2020-06-01 00:00:00+0:00');
+
+ALTER TABLE payment_p2020_05 OWNER TO postgres;
+
+--
+-- Name: payment_p2020_06; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE payment_p2020_06 PARTITION OF payment
+    FOR VALUES FROM ('2020-06-01 00:00:00+0:00') TO ('2020-07-01 00:00:00+0:00');
 
 
-ALTER TABLE payment_p2017_06 OWNER TO postgres;
+ALTER TABLE payment_p2020_06 OWNER TO postgres;
 
 --
 -- Name: rental_rental_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1129,87 +1129,87 @@ CREATE INDEX idx_fk_original_language_id ON film USING btree (original_language_
 
 
 --
--- Name: idx_fk_payment_p2017_01_customer_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_fk_payment_p2020_01_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_fk_payment_p2017_01_customer_id ON payment_p2017_01 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2017_01_staff_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_fk_payment_p2017_01_staff_id ON payment_p2017_01 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2020_01_customer_id ON payment_p2020_01 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_02_customer_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_fk_payment_p2020_01_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_fk_payment_p2017_02_customer_id ON payment_p2017_02 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2017_02_staff_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_fk_payment_p2017_02_staff_id ON payment_p2017_02 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2020_01_staff_id ON payment_p2020_01 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2017_03_customer_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_fk_payment_p2020_02_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_fk_payment_p2017_03_customer_id ON payment_p2017_03 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2017_03_staff_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_fk_payment_p2017_03_staff_id ON payment_p2017_03 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2020_02_customer_id ON payment_p2020_02 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_04_customer_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_fk_payment_p2020_02_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_fk_payment_p2017_04_customer_id ON payment_p2017_04 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2017_04_staff_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_fk_payment_p2017_04_staff_id ON payment_p2017_04 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2020_02_staff_id ON payment_p2020_02 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2017_05_customer_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_fk_payment_p2020_03_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_fk_payment_p2017_05_customer_id ON payment_p2017_05 USING btree (customer_id);
-
-
---
--- Name: idx_fk_payment_p2017_05_staff_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_fk_payment_p2017_05_staff_id ON payment_p2017_05 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2020_03_customer_id ON payment_p2020_03 USING btree (customer_id);
 
 
 --
--- Name: idx_fk_payment_p2017_06_customer_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_fk_payment_p2020_03_staff_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_fk_payment_p2017_06_customer_id ON payment_p2017_06 USING btree (customer_id);
+CREATE INDEX idx_fk_payment_p2020_03_staff_id ON payment_p2020_03 USING btree (staff_id);
 
 
 --
--- Name: idx_fk_payment_p2017_06_staff_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_fk_payment_p2020_04_customer_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_fk_payment_p2017_06_staff_id ON payment_p2017_06 USING btree (staff_id);
+CREATE INDEX idx_fk_payment_p2020_04_customer_id ON payment_p2020_04 USING btree (customer_id);
+
+
+--
+-- Name: idx_fk_payment_p2020_04_staff_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_fk_payment_p2020_04_staff_id ON payment_p2020_04 USING btree (staff_id);
+
+
+--
+-- Name: idx_fk_payment_p2020_05_customer_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_fk_payment_p2020_05_customer_id ON payment_p2020_05 USING btree (customer_id);
+
+
+--
+-- Name: idx_fk_payment_p2020_05_staff_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_fk_payment_p2020_05_staff_id ON payment_p2020_05 USING btree (staff_id);
+
+
+--
+-- Name: idx_fk_payment_p2020_06_customer_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_fk_payment_p2020_06_customer_id ON payment_p2020_06 USING btree (customer_id);
+
+
+--
+-- Name: idx_fk_payment_p2020_06_staff_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_fk_payment_p2020_06_staff_id ON payment_p2020_06 USING btree (staff_id);
 
 
 --
@@ -1513,32 +1513,32 @@ ALTER TABLE ONLY store
 --
 
 
-ALTER TABLE payment_p2017_01
+ALTER TABLE payment_p2020_01
     ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
     ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
     ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
 
-ALTER TABLE payment_p2017_02
+ALTER TABLE payment_p2020_02
     ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
     ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
     ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
 
-ALTER TABLE payment_p2017_03
+ALTER TABLE payment_p2020_03
     ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
     ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
     ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
 
-ALTER TABLE payment_p2017_04
+ALTER TABLE payment_p2020_04
     ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
     ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
     ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
 
-ALTER TABLE payment_p2017_05
+ALTER TABLE payment_p2020_05
     ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
     ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
     ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
 
-ALTER TABLE payment_p2017_06
+ALTER TABLE payment_p2020_06
     ADD FOREIGN KEY(customer_id) REFERENCES customer(customer_id),
     ADD FOREIGN KEY(staff_id) REFERENCES staff(staff_id),
     ADD FOREIGN KEY(rental_id) REFERENCES rental(rental_id);
