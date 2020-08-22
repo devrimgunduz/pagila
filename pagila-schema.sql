@@ -267,11 +267,11 @@ SET default_with_oids = false;
 
 CREATE TABLE customer (
     customer_id integer DEFAULT nextval('customer_customer_id_seq'::regclass) PRIMARY KEY,
-    store_id smallint NOT NULL,
+    store_id integer NOT NULL,
     first_name text NOT NULL,
     last_name text NOT NULL,
     email text,
-    address_id smallint NOT NULL,
+    address_id integer NOT NULL,
     activebool boolean DEFAULT true NOT NULL,
     create_date date DEFAULT CURRENT_DATE NOT NULL,
     last_update timestamp with time zone DEFAULT now(),
@@ -435,8 +435,8 @@ CREATE TABLE film (
     title text NOT NULL,
     description text,
     release_year year,
-    language_id smallint NOT NULL,
-    original_language_id smallint,
+    language_id integer NOT NULL,
+    original_language_id integer,
     rental_duration smallint DEFAULT 3 NOT NULL,
     rental_rate numeric(4,2) DEFAULT 4.99 NOT NULL,
     length smallint,
@@ -455,8 +455,8 @@ ALTER TABLE film OWNER TO postgres;
 --
 
 CREATE TABLE film_actor (
-    actor_id smallint NOT NULL,
-    film_id smallint NOT NULL,
+    actor_id integer NOT NULL,
+    film_id integer NOT NULL,
     last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
@@ -468,8 +468,8 @@ ALTER TABLE film_actor OWNER TO postgres;
 --
 
 CREATE TABLE film_category (
-    film_id smallint NOT NULL,
-    category_id smallint NOT NULL,
+    film_id integer NOT NULL,
+    category_id integer NOT NULL,
     last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
@@ -522,7 +522,7 @@ CREATE TABLE address (
     address text NOT NULL,
     address2 text,
     district text NOT NULL,
-    city_id smallint NOT NULL,
+    city_id integer NOT NULL,
     postal_code text,
     phone text NOT NULL,
     last_update timestamp with time zone DEFAULT now() NOT NULL
@@ -552,7 +552,7 @@ ALTER TABLE city_city_id_seq OWNER TO postgres;
 CREATE TABLE city (
     city_id integer DEFAULT nextval('city_city_id_seq'::regclass) NOT NULL,
     city text NOT NULL,
-    country_id smallint NOT NULL,
+    country_id integer NOT NULL,
     last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
@@ -654,8 +654,8 @@ ALTER TABLE inventory_inventory_id_seq OWNER TO postgres;
 
 CREATE TABLE inventory (
     inventory_id integer DEFAULT nextval('inventory_inventory_id_seq'::regclass) NOT NULL,
-    film_id smallint NOT NULL,
-    store_id smallint NOT NULL,
+    film_id integer NOT NULL,
+    store_id integer NOT NULL,
     last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
@@ -732,8 +732,8 @@ ALTER TABLE payment_payment_id_seq OWNER TO postgres;
 
 CREATE TABLE payment (
     payment_id integer DEFAULT nextval('payment_payment_id_seq'::regclass) NOT NULL,
-    customer_id smallint NOT NULL,
-    staff_id smallint NOT NULL,
+    customer_id integer NOT NULL,
+    staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
     payment_date timestamp with time zone NOT NULL
@@ -819,9 +819,9 @@ CREATE TABLE rental (
     rental_id integer DEFAULT nextval('rental_rental_id_seq'::regclass) NOT NULL,
     rental_date timestamp with time zone NOT NULL,
     inventory_id integer NOT NULL,
-    customer_id smallint NOT NULL,
+    customer_id integer NOT NULL,
     return_date timestamp with time zone,
-    staff_id smallint NOT NULL,
+    staff_id integer NOT NULL,
     last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
@@ -869,9 +869,9 @@ CREATE TABLE staff (
     staff_id integer DEFAULT nextval('staff_staff_id_seq'::regclass) NOT NULL,
     first_name text NOT NULL,
     last_name text NOT NULL,
-    address_id smallint NOT NULL,
+    address_id integer NOT NULL,
     email text,
-    store_id smallint NOT NULL,
+    store_id integer NOT NULL,
     active boolean DEFAULT true NOT NULL,
     username text NOT NULL,
     password text,
@@ -902,8 +902,8 @@ ALTER TABLE store_store_id_seq OWNER TO postgres;
 
 CREATE TABLE store (
     store_id integer DEFAULT nextval('store_store_id_seq'::regclass) NOT NULL,
-    manager_staff_id smallint NOT NULL,
-    address_id smallint NOT NULL,
+    manager_staff_id integer NOT NULL,
+    address_id integer NOT NULL,
     last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
