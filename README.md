@@ -60,7 +60,11 @@ VERSION HISTORY
 ---------------
 
 Version 2.0.1
-* Fix a few minor bugs
+* Replace varchar(n) with text (David Fetter)
+* Match foreign key and primary key data type in some tables (Ganeshan Venkataraman)
+* Change CREATE TABLE statement for customer table to use
+    DEFAULT nextval('customer_customer_id_seq'::regclass) for customer_id
+    field instead of SERIAL (Adrian Klaver).
 
 Version 2.0
 * Update schema for newer PostgreSQL versions
