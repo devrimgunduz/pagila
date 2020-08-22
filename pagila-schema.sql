@@ -273,7 +273,7 @@ CREATE TABLE customer (
     email text,
     address_id smallint NOT NULL,
     activebool boolean DEFAULT true NOT NULL,
-    create_date date DEFAULT ('now'::text)::date NOT NULL,
+    create_date date DEFAULT CURRENT_DATE NOT NULL,
     last_update timestamp with time zone DEFAULT now(),
     active integer
 );
