@@ -6,6 +6,8 @@ originally developed by Mike Hillyer of the MySQL AB documentation team. It
 is intended to provide a standard schema that can be used for examples in 
 books, tutorials, articles, samples, etc.
 
+Pagila works against PostgreSQL 11 and above.
+
 All the tables, data, views, and functions have been ported; some of the
 changes made were:
 
@@ -56,6 +58,9 @@ trouble using one version or another.
 
 VERSION HISTORY
 ---------------
+
+Version 2.0.1
+* Fix a few minor bugs
 
 Version 2.0
 * Update schema for newer PostgreSQL versions
