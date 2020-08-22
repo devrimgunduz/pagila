@@ -59,7 +59,7 @@ trouble using one version or another.
 VERSION HISTORY
 ---------------
 
-Version 2.0.1
+Version 2.0.2
 * Replace varchar(n) with text (David Fetter)
 * Match foreign key and primary key data type in some tables (Ganeshan Venkataraman)
 * Change CREATE TABLE statement for customer table to use
