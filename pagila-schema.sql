@@ -266,7 +266,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE customer (
-    customer_id SERIAL PRIMARY KEY,
+    customer_id integer DEFAULT nextval('customer_customer_id_seq'::regclass) PRIMARY KEY,
     store_id smallint NOT NULL,
     first_name text NOT NULL,
     last_name text NOT NULL,
