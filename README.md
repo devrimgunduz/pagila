@@ -83,3 +83,79 @@ Version 0.9
 
 Version 0.8 
 * First release of pagila
+
+
+CREATE DATABASE ON [DOCKER](https://docs.docker.com/)
+---------------------------
+1. On terminal pull the latest postgres image:
+```
+ docker pull postgres
+```
+2. Run image:
+```
+ docker run --name postgres -e POSTGRES_PASSWORD=secret -d postgres
+```
+3. Run postgres and create the database:
+```
+docker exec -it postgres psql -U postgres
+```
+```
+psql (13.1 (Debian 13.1-1.pgdg100+1))
+Type "help" for help.
+
+postgres=# CREATE DATABASE pagila;
+postgres-# CREATE DATABASE
+postgres=\q
+```
+
+4. Create all schema objetcs (tables, etc) replace ```<local-repo>``` by your local directory :
+
+```
+cat <local-repo>/pagila-schema.sql | docker exec -i postgres psql -U postgres -d pagila
+```
+
+5. Insert all data:
+```
+cat <local-repo>/pagila-data.sql | docker exec -i postgres psql -U postgres -d pagila
+```
+
+6. Done! Just use:
+```
+docker exec -it postgres psql -U 
+```
+````
+postgres                                                        
+psql (13.1 (Debian 13.1-1.pgdg100+1))
+Type "help" for help.
+
+postgres=# \c pagila
+You are now connected to database "pagila" as user "postgres".
+pagila=# \dt
+                    List of relations
+ Schema |       Name       |       Type        |  Owner
+--------+------------------+-------------------+----------
+ public | actor            | table             | postgres
+ public | address          | table             | postgres
+ public | category         | table             | postgres
+ public | city             | table             | postgres
+ public | country          | table             | postgres
+ public | customer         | table             | postgres
+ public | film             | table             | postgres
+ public | film_actor       | table             | postgres
+ public | film_category    | table             | postgres
+ public | inventory        | table             | postgres
+ public | language         | table             | postgres
+ public | payment          | partitioned table | postgres
+ public | payment_p2020_01 | table             | postgres
+ public | payment_p2020_02 | table             | postgres
+ public | payment_p2020_03 | table             | postgres
+ public | payment_p2020_04 | table             | postgres
+ public | payment_p2020_05 | table             | postgres
+ public | payment_p2020_06 | table             | postgres
+ public | rental           | table             | postgres
+ public | staff            | table             | postgres
+ public | store            | table             | postgres
+(21 rows)
+
+pagila=#
+```
