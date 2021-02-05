@@ -122,7 +122,7 @@ cat <local-repo>/pagila-data.sql | docker exec -i postgres psql -U postgres -d p
 
 6. Done! Just use:
 ```
-docker exec -it postgres psql -U 
+docker exec -it postgres psql -U postgres
 ```
 ````
 postgres
