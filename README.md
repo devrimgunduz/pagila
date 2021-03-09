@@ -1,4 +1,4 @@
-Pagila
+Pagila Docker Compose 
 ======
 
 Pagila is a port of the Sakila example database available for MySQL, which was
@@ -160,3 +160,7 @@ pagila=# \dt
 
 pagila=#
 ```
+
+
+CREATE DATABASE ON [DOCKER-COMPOSE](https://docs.docker.com/compose/)
+---------------------------
