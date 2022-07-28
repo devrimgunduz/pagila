@@ -70,10 +70,10 @@ Since JSONB data is quite large to store on Github, the backup is not a plain SQ
 file. You can still use psql/pgAdmin, etc. to load pagila-schema-jsonb.sql, however
 please use pg_restore to load jsonb data files:
 
-```text
+```
 pg_restore /usr/share/pagila/pagila-data-yum-jsonb.sql -U postgres -d pagila
 pg_restore /usr/share/pagila/pagila-data-apt-jsonb.sql -U postgres -d pagila
-```sql
+```
 
 ## VERSION HISTORY
 
