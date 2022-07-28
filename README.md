@@ -64,10 +64,16 @@ The pagila-data.sql file and the pagila-insert-data.sql both contain the same
 data, the former using COPY commands, the latter using INSERT commands, so you
 only need to install one of them. Both formats are provided for those who have
 trouble using one version or another, and for instructors who want to point out
-the longer data loading time with the latter.
+the longer data loading time with the latter. You can load them via psql, pgAdmin, etc.
 
-Since JSONB data is quite large to store on Github, please use pg_restore to load
-those JSONB data.
+Since JSONB data is quite large to store on Github, the backup is not a plain SQL
+file. You can still use psql/pgAdmin, etc. to load pagila-schema-jsonb.sql, however
+please use pg_restore to load jsonb data files:
+
+```text
+pg_restore /usr/share/pagila/pagila-data-yum-jsonb.sql -U postgres -d pagila
+pg_restore /usr/share/pagila/pagila-data-apt-jsonb.sql -U postgres -d pagila
+```sql
 
 ## VERSION HISTORY
 
