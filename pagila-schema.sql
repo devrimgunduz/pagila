@@ -891,6 +891,26 @@ CREATE TABLE public.rental (
 ALTER TABLE public.rental OWNER TO postgres;
 
 --
+-- Name: rental_by_category; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
+--
+
+CREATE MATERIALIZED VIEW public.rental_by_category AS
+ SELECT c.name AS category,
+    sum(p.amount) AS total_sales
+   FROM (((((public.payment p
+     JOIN public.rental r ON ((p.rental_id = r.rental_id)))
+     JOIN public.inventory i ON ((r.inventory_id = i.inventory_id)))
+     JOIN public.film f ON ((i.film_id = f.film_id)))
+     JOIN public.film_category fc ON ((f.film_id = fc.film_id)))
+     JOIN public.category c ON ((fc.category_id = c.category_id)))
+  GROUP BY c.name
+  ORDER BY (sum(p.amount)) DESC
+  WITH NO DATA;
+
+
+ALTER TABLE public.rental_by_category OWNER TO postgres;
+
+--
 -- Name: sales_by_film_category; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1405,6 +1425,13 @@ CREATE INDEX payment_p2022_05_customer_id_idx ON public.payment_p2022_05 USING b
 --
 
 CREATE INDEX payment_p2022_06_customer_id_idx ON public.payment_p2022_06 USING btree (customer_id);
+
+
+--
+-- Name: rental_category; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX rental_category ON public.rental_by_category USING btree (category);
 
 
 --
