@@ -74,9 +74,9 @@ those JSONB data.
 Version 3.0.0
 
 - Add JSONB sample data (based on the packages at apt.postgresql.org and yum.postgresql.org)
-- Add docker compose support ( contributed by https://github.com/theothermattm )
+- Add docker compose support ( contributed by https://github.com/theothermattm ) https://github.com/devrimgunduz/pagila/pull/16
 - Add steps to create pagila database on docker by @dedeco in https://github.com/devrimgunduz/pagila/pull/13
-- Add missing user argument by @zOxta in https://github.com/devrimgunduz/pagila/pull/14https://github.com/theothermattm
+- Add missing user argument by @zOxta in https://github.com/devrimgunduz/pagila/pull/14
 - Update dates to 2022
 - Fix various issues reported in Github
 
