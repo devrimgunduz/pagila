@@ -1,11 +1,11 @@
-# Pagila Docker Compose
+# Pagila
 
-Pagila is a port of the Sakila example database available for MySQL, which was
+Pagila started as a port of the Sakila example database available for MySQL, which was
 originally developed by Mike Hillyer of the MySQL AB documentation team. It
 is intended to provide a standard schema that can be used for examples in
 books, tutorials, articles, samples, etc.
 
-Pagila works against PostgreSQL 11 and above.
+Pagila has been tested against PostgreSQL 12 and above.
 
 All the tables, data, views, and functions have been ported; some of the
 changes made were:
@@ -17,11 +17,9 @@ changes made were:
 - Used PostgreSQL built-in fulltext searching for fulltext index.
   Removed the need for the film_text table.
 - The rewards_report function was ported to a simple SRF
+- Added JSONB data
 
-The schema and data for the Sakila database were made available under the BSD
-license which can be found at
-http://www.opensource.org/licenses/bsd-license.php.
-The pagila database is made available under this license as well.
+The pagila database is made available under PostgreSQL license.
 
 ## EXAMPLE QUERY
 
@@ -53,27 +51,32 @@ in the main schema file.
 
 Example usage:
 
-SELECT \* FROM film WHERE fulltext @@ to_tsquery('fate&india');
+SELECT * FROM film WHERE fulltext @@ to_tsquery('fate&india');
 
 ## PARTITIONED TABLES
 
-The payment table is designed as a partitioned table with a 6 month timespan
+The payment table is designed as a partitioned table with a 7 month timespan
 for the date ranges.
-If you want to take full advantage of table partitioning, you need to make
-sure constraint_exclusion is turned on in your database. You can do this by
-setting "constraint_exclusion = on" in your postgresql.conf, or by issuing the
-command "ALTER DATABASE pagila SET constraint_exclusion = on" (substitute
-pagila for your database name if installing into a database with a different
-name)
 
 ## INSTALL NOTE
 
 The pagila-data.sql file and the pagila-insert-data.sql both contain the same
 data, the former using COPY commands, the latter using INSERT commands, so you
 only need to install one of them. Both formats are provided for those who have
-trouble using one version or another.
+trouble using one version or another, and for instructors who want to point out
+the longer data loading time with the latter.
+
+Since JSONB data is quite large to store on Github, please use pg_restore to load
+those JSONB data.
 
 ## VERSION HISTORY
+
+Version 3.0.0
+
+- Update dates to 2022
+- Fix various issues reported in Github
+- Add docker compose support ( contributed by https://github.com/theothermattm )
+- Add JSONB sample data (based on the packages at apt.postgresql.org and yum.postgresql.org)
 
 Version 2.1.0
 
@@ -176,12 +179,13 @@ pagila=# \dt
  public | inventory        | table             | postgres
  public | language         | table             | postgres
  public | payment          | partitioned table | postgres
- public | payment_p2020_01 | table             | postgres
- public | payment_p2020_02 | table             | postgres
- public | payment_p2020_03 | table             | postgres
- public | payment_p2020_04 | table             | postgres
- public | payment_p2020_05 | table             | postgres
- public | payment_p2020_06 | table             | postgres
+ public | payment_p2022_01 | table             | postgres
+ public | payment_p2022_02 | table             | postgres
+ public | payment_p2022_03 | table             | postgres
+ public | payment_p2022_04 | table             | postgres
+ public | payment_p2022_05 | table             | postgres
+ public | payment_p2022_06 | table             | postgres
+ public | payment_p2022_07 | table             | postgres
  public | rental           | table             | postgres
  public | staff            | table             | postgres
  public | store            | table             | postgres
@@ -229,12 +233,13 @@ public | film_category | table | postgres
 public | inventory | table | postgres
 public | language | table | postgres
 public | payment | partitioned table | postgres
-public | payment_p2020_01 | table | postgres
-public | payment_p2020_02 | table | postgres
-public | payment_p2020_03 | table | postgres
-public | payment_p2020_04 | table | postgres
-public | payment_p2020_05 | table | postgres
-public | payment_p2020_06 | table | postgres
+public | payment_p2022_01 | table | postgres
+public | payment_p2022_02 | table | postgres
+public | payment_p2022_03 | table | postgres
+public | payment_p2022_04 | table | postgres
+public | payment_p2022_05 | table | postgres
+public | payment_p2022_06 | table | postgres
+public | payment_p2022_07 | table | postgres
 public | rental | table | postgres
 public | staff | table | postgres
 public | store | table | postgres
