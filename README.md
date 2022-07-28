@@ -73,7 +73,7 @@ please use pg_restore to load jsonb data files:
 ```text
 pg_restore /usr/share/pagila/pagila-data-yum-jsonb.sql -U postgres -d pagila
 pg_restore /usr/share/pagila/pagila-data-apt-jsonb.sql -U postgres -d pagila
-```sql
+```text
 
 ## VERSION HISTORY
 
