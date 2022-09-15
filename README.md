@@ -1,6 +1,6 @@
 # Pagila
 
-Pagila started as a port of the Sakila example database available for MySQL, which was
+Pagila started as a port of the Sakila (https://dev.mysql.com/doc/sakila/en/) example database available for MySQL, which was
 originally developed by Mike Hillyer of the MySQL AB documentation team. It
 is intended to provide a standard schema that can be used for examples in
 books, tutorials, articles, samples, etc.
