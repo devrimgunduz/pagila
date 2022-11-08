@@ -53,6 +53,12 @@ Example usage:
 
 SELECT * FROM film WHERE fulltext @@ to_tsquery('fate&india');
 
+pgAdmin is included in the docker-compose.
+
+Navigate to the URL : http://localhost:5050/
+Default Username: admin@admin.com
+Default Password: root
+
 ## PARTITIONED TABLES
 
 The payment table is designed as a partitioned table with a 7 month timespan
