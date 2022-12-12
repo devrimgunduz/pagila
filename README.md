@@ -220,7 +220,7 @@ docker-compose up
 2. Done! Just use:
 
 ```
-docker exec -it postgres psql -U postgres
+docker exec -it pagila psql -U postgres
 ```
 
 ```
