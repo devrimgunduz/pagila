@@ -740,7 +740,8 @@ CREATE TABLE public.payment (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    PRIMARY KEY (payment_date, payment_id)
 )
 PARTITION BY RANGE (payment_date);
 
