@@ -83,6 +83,10 @@ pg_restore /usr/share/pagila/pagila-data-apt-jsonb.sql -U postgres -d pagila
 
 ## VERSION HISTORY
 
+Version 3.1.0
+
+- Add PNG image for staff member Mike Hillyer (Lorin Thwaits)
+
 Version 3.0.0
 
 - Add JSONB sample data (based on the packages at apt.postgresql.org and yum.postgresql.org)
