@@ -3,7 +3,7 @@ volumes:
   pgdata:
 services:
   pagila:
-    image: postgres:13.2
+    image: postgres:16.4
     container_name: pagila
     environment:
       POSTGRES_PASSWORD: 123456
