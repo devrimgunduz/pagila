@@ -2,13 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.0
--- Dumped by pg_dump version 17.0
+-- Dumped from database version 12.11
+-- Dumped by pg_dump version 15beta2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -260,7 +259,7 @@ CREATE SEQUENCE public.customer_customer_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.customer_customer_id_seq OWNER TO postgres;
+ALTER TABLE public.customer_customer_id_seq OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -374,7 +373,7 @@ CREATE SEQUENCE public.actor_actor_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.actor_actor_id_seq OWNER TO postgres;
+ALTER TABLE public.actor_actor_id_seq OWNER TO postgres;
 
 --
 -- Name: actor; Type: TABLE; Schema: public; Owner: postgres
@@ -402,7 +401,7 @@ CREATE SEQUENCE public.category_category_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.category_category_id_seq OWNER TO postgres;
+ALTER TABLE public.category_category_id_seq OWNER TO postgres;
 
 --
 -- Name: category; Type: TABLE; Schema: public; Owner: postgres
@@ -429,7 +428,7 @@ CREATE SEQUENCE public.film_film_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.film_film_id_seq OWNER TO postgres;
+ALTER TABLE public.film_film_id_seq OWNER TO postgres;
 
 --
 -- Name: film; Type: TABLE; Schema: public; Owner: postgres
@@ -502,7 +501,7 @@ CREATE VIEW public.actor_info AS
   GROUP BY a.actor_id, a.first_name, a.last_name;
 
 
-ALTER VIEW public.actor_info OWNER TO postgres;
+ALTER TABLE public.actor_info OWNER TO postgres;
 
 --
 -- Name: address_address_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -516,7 +515,7 @@ CREATE SEQUENCE public.address_address_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.address_address_id_seq OWNER TO postgres;
+ALTER TABLE public.address_address_id_seq OWNER TO postgres;
 
 --
 -- Name: address; Type: TABLE; Schema: public; Owner: postgres
@@ -548,7 +547,7 @@ CREATE SEQUENCE public.city_city_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.city_city_id_seq OWNER TO postgres;
+ALTER TABLE public.city_city_id_seq OWNER TO postgres;
 
 --
 -- Name: city; Type: TABLE; Schema: public; Owner: postgres
@@ -576,7 +575,7 @@ CREATE SEQUENCE public.country_country_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.country_country_id_seq OWNER TO postgres;
+ALTER TABLE public.country_country_id_seq OWNER TO postgres;
 
 --
 -- Name: country; Type: TABLE; Schema: public; Owner: postgres
@@ -614,7 +613,7 @@ CREATE VIEW public.customer_list AS
      JOIN public.country ON ((city.country_id = country.country_id)));
 
 
-ALTER VIEW public.customer_list OWNER TO postgres;
+ALTER TABLE public.customer_list OWNER TO postgres;
 
 --
 -- Name: film_list; Type: VIEW; Schema: public; Owner: postgres
@@ -637,7 +636,7 @@ CREATE VIEW public.film_list AS
   GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating;
 
 
-ALTER VIEW public.film_list OWNER TO postgres;
+ALTER TABLE public.film_list OWNER TO postgres;
 
 --
 -- Name: inventory_inventory_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -651,7 +650,7 @@ CREATE SEQUENCE public.inventory_inventory_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.inventory_inventory_id_seq OWNER TO postgres;
+ALTER TABLE public.inventory_inventory_id_seq OWNER TO postgres;
 
 --
 -- Name: inventory; Type: TABLE; Schema: public; Owner: postgres
@@ -679,7 +678,7 @@ CREATE SEQUENCE public.language_language_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.language_language_id_seq OWNER TO postgres;
+ALTER TABLE public.language_language_id_seq OWNER TO postgres;
 
 --
 -- Name: language; Type: TABLE; Schema: public; Owner: postgres
@@ -715,7 +714,7 @@ CREATE VIEW public.nicer_but_slower_film_list AS
   GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating;
 
 
-ALTER VIEW public.nicer_but_slower_film_list OWNER TO postgres;
+ALTER TABLE public.nicer_but_slower_film_list OWNER TO postgres;
 
 --
 -- Name: payment_payment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -729,7 +728,7 @@ CREATE SEQUENCE public.payment_payment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.payment_payment_id_seq OWNER TO postgres;
+ALTER TABLE public.payment_payment_id_seq OWNER TO postgres;
 
 --
 -- Name: payment; Type: TABLE; Schema: public; Owner: postgres
@@ -741,7 +740,8 @@ CREATE TABLE public.payment (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    PRIMARY KEY (payment_date, payment_id)
 )
 PARTITION BY RANGE (payment_date);
 
@@ -872,7 +872,7 @@ CREATE SEQUENCE public.rental_rental_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.rental_rental_id_seq OWNER TO postgres;
+ALTER TABLE public.rental_rental_id_seq OWNER TO postgres;
 
 --
 -- Name: rental; Type: TABLE; Schema: public; Owner: postgres
@@ -909,7 +909,7 @@ CREATE MATERIALIZED VIEW public.rental_by_category AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.rental_by_category OWNER TO postgres;
+ALTER TABLE public.rental_by_category OWNER TO postgres;
 
 --
 -- Name: sales_by_film_category; Type: VIEW; Schema: public; Owner: postgres
@@ -928,7 +928,7 @@ CREATE VIEW public.sales_by_film_category AS
   ORDER BY (sum(p.amount)) DESC;
 
 
-ALTER VIEW public.sales_by_film_category OWNER TO postgres;
+ALTER TABLE public.sales_by_film_category OWNER TO postgres;
 
 --
 -- Name: staff_staff_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -942,7 +942,7 @@ CREATE SEQUENCE public.staff_staff_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.staff_staff_id_seq OWNER TO postgres;
+ALTER TABLE public.staff_staff_id_seq OWNER TO postgres;
 
 --
 -- Name: staff; Type: TABLE; Schema: public; Owner: postgres
@@ -977,7 +977,7 @@ CREATE SEQUENCE public.store_store_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.store_store_id_seq OWNER TO postgres;
+ALTER TABLE public.store_store_id_seq OWNER TO postgres;
 
 --
 -- Name: store; Type: TABLE; Schema: public; Owner: postgres
@@ -1013,7 +1013,7 @@ CREATE VIEW public.sales_by_store AS
   ORDER BY cy.country, c.city;
 
 
-ALTER VIEW public.sales_by_store OWNER TO postgres;
+ALTER TABLE public.sales_by_store OWNER TO postgres;
 
 --
 -- Name: staff_list; Type: VIEW; Schema: public; Owner: postgres
@@ -1034,55 +1034,55 @@ CREATE VIEW public.staff_list AS
      JOIN public.country ON ((city.country_id = country.country_id)));
 
 
-ALTER VIEW public.staff_list OWNER TO postgres;
+ALTER TABLE public.staff_list OWNER TO postgres;
 
 --
 -- Name: payment_p2022_01; Type: TABLE ATTACH; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_01 FOR VALUES FROM ('2022-01-01 03:00:00+03') TO ('2022-02-01 03:00:00+03');
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_01 FOR VALUES FROM ('2022-01-01 00:00:00+00') TO ('2022-02-01 00:00:00+00');
 
 
 --
 -- Name: payment_p2022_02; Type: TABLE ATTACH; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_02 FOR VALUES FROM ('2022-02-01 03:00:00+03') TO ('2022-03-01 03:00:00+03');
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_02 FOR VALUES FROM ('2022-02-01 00:00:00+00') TO ('2022-03-01 00:00:00+00');
 
 
 --
 -- Name: payment_p2022_03; Type: TABLE ATTACH; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_03 FOR VALUES FROM ('2022-03-01 03:00:00+03') TO ('2022-04-01 03:00:00+03');
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_03 FOR VALUES FROM ('2022-03-01 00:00:00+00') TO ('2022-04-01 01:00:00+01');
 
 
 --
 -- Name: payment_p2022_04; Type: TABLE ATTACH; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_04 FOR VALUES FROM ('2022-04-01 03:00:00+03') TO ('2022-05-01 03:00:00+03');
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_04 FOR VALUES FROM ('2022-04-01 01:00:00+01') TO ('2022-05-01 01:00:00+01');
 
 
 --
 -- Name: payment_p2022_05; Type: TABLE ATTACH; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_05 FOR VALUES FROM ('2022-05-01 03:00:00+03') TO ('2022-06-01 03:00:00+03');
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_05 FOR VALUES FROM ('2022-05-01 01:00:00+01') TO ('2022-06-01 01:00:00+01');
 
 
 --
 -- Name: payment_p2022_06; Type: TABLE ATTACH; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_06 FOR VALUES FROM ('2022-06-01 03:00:00+03') TO ('2022-07-01 03:00:00+03');
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_06 FOR VALUES FROM ('2022-06-01 01:00:00+01') TO ('2022-07-01 01:00:00+01');
 
 
 --
 -- Name: payment_p2022_07; Type: TABLE ATTACH; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_07 FOR VALUES FROM ('2022-07-01 03:00:00+03') TO ('2022-08-01 03:00:00+03');
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2022_07 FOR VALUES FROM ('2022-07-01 01:00:00+01') TO ('2022-08-01 01:00:00+01');
 
 
 --
@@ -1171,70 +1171,6 @@ ALTER TABLE ONLY public.inventory
 
 ALTER TABLE ONLY public.language
     ADD CONSTRAINT language_pkey PRIMARY KEY (language_id);
-
-
---
--- Name: payment payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment
-    ADD CONSTRAINT payment_pkey PRIMARY KEY (payment_date, payment_id);
-
-
---
--- Name: payment_p2022_01 payment_p2022_01_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2022_01
-    ADD CONSTRAINT payment_p2022_01_pkey PRIMARY KEY (payment_date, payment_id);
-
-
---
--- Name: payment_p2022_02 payment_p2022_02_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2022_02
-    ADD CONSTRAINT payment_p2022_02_pkey PRIMARY KEY (payment_date, payment_id);
-
-
---
--- Name: payment_p2022_03 payment_p2022_03_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2022_03
-    ADD CONSTRAINT payment_p2022_03_pkey PRIMARY KEY (payment_date, payment_id);
-
-
---
--- Name: payment_p2022_04 payment_p2022_04_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2022_04
-    ADD CONSTRAINT payment_p2022_04_pkey PRIMARY KEY (payment_date, payment_id);
-
-
---
--- Name: payment_p2022_05 payment_p2022_05_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2022_05
-    ADD CONSTRAINT payment_p2022_05_pkey PRIMARY KEY (payment_date, payment_id);
-
-
---
--- Name: payment_p2022_06 payment_p2022_06_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2022_06
-    ADD CONSTRAINT payment_p2022_06_pkey PRIMARY KEY (payment_date, payment_id);
-
-
---
--- Name: payment_p2022_07 payment_p2022_07_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2022_07
-    ADD CONSTRAINT payment_p2022_07_pkey PRIMARY KEY (payment_date, payment_id);
 
 
 --
@@ -1497,55 +1433,6 @@ CREATE INDEX payment_p2022_06_customer_id_idx ON public.payment_p2022_06 USING b
 --
 
 CREATE UNIQUE INDEX rental_category ON public.rental_by_category USING btree (category);
-
-
---
--- Name: payment_p2022_01_pkey; Type: INDEX ATTACH; Schema: public; Owner: postgres
---
-
-ALTER INDEX public.payment_pkey ATTACH PARTITION public.payment_p2022_01_pkey;
-
-
---
--- Name: payment_p2022_02_pkey; Type: INDEX ATTACH; Schema: public; Owner: postgres
---
-
-ALTER INDEX public.payment_pkey ATTACH PARTITION public.payment_p2022_02_pkey;
-
-
---
--- Name: payment_p2022_03_pkey; Type: INDEX ATTACH; Schema: public; Owner: postgres
---
-
-ALTER INDEX public.payment_pkey ATTACH PARTITION public.payment_p2022_03_pkey;
-
-
---
--- Name: payment_p2022_04_pkey; Type: INDEX ATTACH; Schema: public; Owner: postgres
---
-
-ALTER INDEX public.payment_pkey ATTACH PARTITION public.payment_p2022_04_pkey;
-
-
---
--- Name: payment_p2022_05_pkey; Type: INDEX ATTACH; Schema: public; Owner: postgres
---
-
-ALTER INDEX public.payment_pkey ATTACH PARTITION public.payment_p2022_05_pkey;
-
-
---
--- Name: payment_p2022_06_pkey; Type: INDEX ATTACH; Schema: public; Owner: postgres
---
-
-ALTER INDEX public.payment_pkey ATTACH PARTITION public.payment_p2022_06_pkey;
-
-
---
--- Name: payment_p2022_07_pkey; Type: INDEX ATTACH; Schema: public; Owner: postgres
---
-
-ALTER INDEX public.payment_pkey ATTACH PARTITION public.payment_p2022_07_pkey;
 
 
 --
