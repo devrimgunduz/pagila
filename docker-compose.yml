@@ -17,6 +17,8 @@ services:
       - ./pagila-data-apt-jsonb.backup:/docker-entrypoint-initdb.d/pagila-data-apt-jsonb.backup
       - ./pagila-schema-2.sql:/docker-entrypoint-initdb.d/4-pagila-schema-2.sql
       - ./pagila-insert-data-2.sql:/docker-entrypoint-initdb.d/5-pagila-insert-data-2.sql
+      - ./pagila-schema-3-media-technical-data.sql:/docker-entrypoint-initdb.d/6-pagila-schema-3-media-technical-data.sql
+      - ./pagila-insert-data-3-media-technical-data.sql:/docker-entrypoint-initdb.d/7-pagila-insert-data-3-media-technical-data.sql
       - pgdata:/var/lib/postgresql/data
     expose:
       - 5432
