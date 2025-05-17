@@ -8,6 +8,7 @@ services:
     environment:
       POSTGRES_PASSWORD: 123456
       POSTGRES_USER: postgres
+      POSTGRES_DB: pagila
     volumes:
       - ./pagila-schema.sql:/docker-entrypoint-initdb.d/1-pagila-schema.sql
       - ./pagila-schema-jsonb.sql:/docker-entrypoint-initdb.d/1-pagila-schema-jsonb.sql
