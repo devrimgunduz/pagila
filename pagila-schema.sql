@@ -488,12 +488,12 @@ CREATE VIEW public.actor_info AS
  SELECT a.actor_id,
     a.first_name,
     a.last_name,
-    public.group_concat(DISTINCT ((c.name || ': '::text) || ( SELECT public.group_concat(f.title) AS group_concat
+    jsonb_object_agg(c.name, ( SELECT array_agg(f.title) AS array_agg
            FROM ((public.film f
              JOIN public.film_category fc_1 ON ((f.film_id = fc_1.film_id)))
              JOIN public.film_actor fa_1 ON ((f.film_id = fa_1.film_id)))
           WHERE ((fc_1.category_id = c.category_id) AND (fa_1.actor_id = a.actor_id))
-          GROUP BY fa_1.actor_id))) AS film_info
+          GROUP BY fa_1.actor_id)) FILTER (WHERE (c.name IS NOT NULL)) AS film_info
    FROM (((public.actor a
      LEFT JOIN public.film_actor fa ON ((a.actor_id = fa.actor_id)))
      LEFT JOIN public.film_category fc ON ((fa.film_id = fc.film_id)))

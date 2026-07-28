@@ -59,6 +59,25 @@ Navigate to the URL : http://localhost:5050/
 Default Username: admin@admin.com
 Default Password: root
 
+## JSONB
+
+`actor_info` is a view within the DVD rental domain itself: for each actor,
+it aggregates their films into a JSONB object keyed by category, e.g.
+`{"Games": ["ACADEMY DINOSAUR", "WEDDING APOLLO"], "Drama": [...], ...}`.
+It's a good place to get familiar with JSONB's operators:
+
+```sql
+SELECT actor_id, first_name, last_name, film_info -> 'Games' AS games
+FROM actor_info
+WHERE film_info -> 'Games' ? 'ACADEMY DINOSAUR';
+```
+
+`pagila-schema-jsonb.sql` / `pagila-data-yum-jsonb.backup` /
+`pagila-data-apt-jsonb.backup` are a separate, unrelated JSONB example: two
+tables holding real package metadata from apt.postgresql.org and
+yum.postgresql.org, useful for practicing JSONB on a different shape of
+data. See the INSTALL NOTE below for how to load them.
+
 ## PARTITIONED TABLES
 
 The payment table is designed as a partitioned table, with one partition per
@@ -122,6 +141,7 @@ Version 4.0.0
   - Randomize `last_update`/`create_date` timestamps across all tables instead of reusing one fixed value per table
 - Add 48 new monthly partitions to the `payment` table in `pagila-schema.sql` (Aug 2022 - Jul 2026) to support the extended date range
 - Add `scripts/add_monthly_data.sh` to keep a running pagila instance current: creates the next `payment` partition and populates a month of new rental/payment activity, meant to be scheduled monthly
+- Rework the `actor_info` view to return a JSONB column (film titles grouped by category) instead of a concatenated text string, so it's a domain-relevant example for practicing JSONB operators (fixes #21)
 
 Version 3.1.0
 
