@@ -279,7 +279,8 @@ CREATE TABLE public.customer (
     activebool boolean DEFAULT true NOT NULL,
     create_date date DEFAULT CURRENT_DATE NOT NULL,
     last_update timestamp with time zone DEFAULT now(),
-    active integer
+    active integer,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -741,6 +742,7 @@ CREATE TABLE public.payment (
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
     payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL,
     PRIMARY KEY (payment_date, payment_id)
 )
 PARTITION BY RANGE (payment_date);
@@ -758,7 +760,8 @@ CREATE TABLE public.payment_p2022_01 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -774,7 +777,8 @@ CREATE TABLE public.payment_p2022_02 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -790,7 +794,8 @@ CREATE TABLE public.payment_p2022_03 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -806,7 +811,8 @@ CREATE TABLE public.payment_p2022_04 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -822,7 +828,8 @@ CREATE TABLE public.payment_p2022_05 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -838,7 +845,8 @@ CREATE TABLE public.payment_p2022_06 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -854,7 +862,8 @@ CREATE TABLE public.payment_p2022_07 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -870,7 +879,8 @@ CREATE TABLE public.payment_p2022_08 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -886,7 +896,8 @@ CREATE TABLE public.payment_p2022_09 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -902,7 +913,8 @@ CREATE TABLE public.payment_p2022_10 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -918,7 +930,8 @@ CREATE TABLE public.payment_p2022_11 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -934,7 +947,8 @@ CREATE TABLE public.payment_p2022_12 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -950,7 +964,8 @@ CREATE TABLE public.payment_p2023_01 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -966,7 +981,8 @@ CREATE TABLE public.payment_p2023_02 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -982,7 +998,8 @@ CREATE TABLE public.payment_p2023_03 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -998,7 +1015,8 @@ CREATE TABLE public.payment_p2023_04 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1014,7 +1032,8 @@ CREATE TABLE public.payment_p2023_05 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1030,7 +1049,8 @@ CREATE TABLE public.payment_p2023_06 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1046,7 +1066,8 @@ CREATE TABLE public.payment_p2023_07 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1062,7 +1083,8 @@ CREATE TABLE public.payment_p2023_08 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1078,7 +1100,8 @@ CREATE TABLE public.payment_p2023_09 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1094,7 +1117,8 @@ CREATE TABLE public.payment_p2023_10 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1110,7 +1134,8 @@ CREATE TABLE public.payment_p2023_11 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1126,7 +1151,8 @@ CREATE TABLE public.payment_p2023_12 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1142,7 +1168,8 @@ CREATE TABLE public.payment_p2024_01 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1158,7 +1185,8 @@ CREATE TABLE public.payment_p2024_02 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1174,7 +1202,8 @@ CREATE TABLE public.payment_p2024_03 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1190,7 +1219,8 @@ CREATE TABLE public.payment_p2024_04 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1206,7 +1236,8 @@ CREATE TABLE public.payment_p2024_05 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1222,7 +1253,8 @@ CREATE TABLE public.payment_p2024_06 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1238,7 +1270,8 @@ CREATE TABLE public.payment_p2024_07 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1254,7 +1287,8 @@ CREATE TABLE public.payment_p2024_08 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1270,7 +1304,8 @@ CREATE TABLE public.payment_p2024_09 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1286,7 +1321,8 @@ CREATE TABLE public.payment_p2024_10 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1302,7 +1338,8 @@ CREATE TABLE public.payment_p2024_11 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1318,7 +1355,8 @@ CREATE TABLE public.payment_p2024_12 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1334,7 +1372,8 @@ CREATE TABLE public.payment_p2025_01 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1350,7 +1389,8 @@ CREATE TABLE public.payment_p2025_02 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1366,7 +1406,8 @@ CREATE TABLE public.payment_p2025_03 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1382,7 +1423,8 @@ CREATE TABLE public.payment_p2025_04 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1398,7 +1440,8 @@ CREATE TABLE public.payment_p2025_05 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1414,7 +1457,8 @@ CREATE TABLE public.payment_p2025_06 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1430,7 +1474,8 @@ CREATE TABLE public.payment_p2025_07 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1446,7 +1491,8 @@ CREATE TABLE public.payment_p2025_08 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1462,7 +1508,8 @@ CREATE TABLE public.payment_p2025_09 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1478,7 +1525,8 @@ CREATE TABLE public.payment_p2025_10 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1494,7 +1542,8 @@ CREATE TABLE public.payment_p2025_11 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1510,7 +1559,8 @@ CREATE TABLE public.payment_p2025_12 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1526,7 +1576,8 @@ CREATE TABLE public.payment_p2026_01 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1542,7 +1593,8 @@ CREATE TABLE public.payment_p2026_02 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1558,7 +1610,8 @@ CREATE TABLE public.payment_p2026_03 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1574,7 +1627,8 @@ CREATE TABLE public.payment_p2026_04 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1590,7 +1644,8 @@ CREATE TABLE public.payment_p2026_05 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1606,7 +1661,8 @@ CREATE TABLE public.payment_p2026_06 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1622,7 +1678,8 @@ CREATE TABLE public.payment_p2026_07 (
     staff_id integer NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp with time zone NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -1653,7 +1710,8 @@ CREATE TABLE public.rental (
     customer_id integer NOT NULL,
     return_date timestamp with time zone,
     staff_id integer NOT NULL,
-    last_update timestamp with time zone DEFAULT now() NOT NULL
+    last_update timestamp with time zone DEFAULT now() NOT NULL,
+    uuid uuid DEFAULT uuidv7() NOT NULL
 );
 
 
@@ -2489,6 +2547,27 @@ CREATE INDEX payment_p2022_06_customer_id_idx ON public.payment_p2022_06 USING b
 --
 
 CREATE UNIQUE INDEX rental_category ON public.rental_by_category USING btree (category);
+
+
+--
+-- Name: customer_uuid_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX customer_uuid_key ON public.customer USING btree (uuid);
+
+
+--
+-- Name: rental_uuid_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX rental_uuid_key ON public.rental USING btree (uuid);
+
+
+--
+-- Name: payment_uuid_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX payment_uuid_key ON public.payment USING btree (uuid, payment_date);
 
 
 --
