@@ -6,9 +6,10 @@
 -- manually created before pg_partman was introduced. create_parent() is
 -- told to only start managing partitions from 2026-08 onward, so it
 -- leaves that existing history alone and just keeps premake (4, the
--- default) months of future partitions pre-created from then on -- via
--- the pg_partman_bgw background worker (see docker-compose.yml) or by
--- calling partman.run_maintenance_proc() by hand.
+-- default) months of future partitions pre-created from then on --
+-- pg_partman's own background worker (pg_partman_bgw) is intentionally
+-- not used for this; see scripts/run_partman_maintenance.sh, meant to be
+-- scheduled via cron instead.
 --
 -- If you're loading this against a payment table whose manually-created
 -- partitions extend further than 2026-07, bump p_start_partition below to

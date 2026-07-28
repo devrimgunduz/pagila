@@ -237,10 +237,15 @@ SELECT partman.create_parent(
 
 `p_start_partition` is the key part: it tells pg_partman to only manage
 partitions from August 2026 onward, leaving the hand-created 2022-2026
-history alone. From then on, pg_partman's background worker
-(`shared_preload_libraries=pg_partman_bgw` in `docker-compose.yml`) keeps
-`p_premake` (default 4) months pre-created automatically — no more manual
-`CREATE TABLE ... PARTITION OF`:
+history alone. From then on, `p_premake` (default 4) months are kept
+pre-created automatically — no more manual `CREATE TABLE ... PARTITION OF`
+— but *only* if maintenance actually runs regularly. This project
+intentionally doesn't use pg_partman's own background worker
+(`pg_partman_bgw`) for that, to avoid the extra `shared_preload_libraries`
+dependency and long-lived worker process inside the container; instead,
+`scripts/run_partman_maintenance.sh` runs the maintenance call and is
+meant to be scheduled via cron, the same way `scripts/add_monthly_data.sh`
+is (see "KEEPING DATA FRESH" below):
 
 ```sql
 -- see its config:
@@ -250,9 +255,15 @@ FROM partman.part_config;
 -- list all of payment's partitions, old (hand-created) and new (pg_partman):
 SELECT * FROM partman.show_partitions('public.payment');
 
--- force partition maintenance immediately instead of waiting for the
--- background worker's next run (scripts/add_monthly_data.sh does this):
-CALL partman.run_maintenance_proc();
+-- what scripts/run_partman_maintenance.sh calls: create any partitions
+-- that are due, ANALYZE them, and log to pg_jobmon if it's installed:
+CALL partman.run_maintenance_proc(0, true, true);
+```
+
+```
+# Example crontab entry, running daily at 02:00:
+0 2 * * * PGHOST=localhost PGUSER=postgres PGPASSWORD=secret PGDATABASE=pagila \
+  /path/to/pagila/scripts/run_partman_maintenance.sh >> /var/log/pagila-partman.log 2>&1
 ```
 
 ## KEEPING DATA FRESH
@@ -318,7 +329,7 @@ Version 4.0.0
 - Add a `uuid` column (`DEFAULT uuidv7()`, unique-indexed) to `customer`, `rental`, and `payment`, demonstrating PostgreSQL 18's new UUID functions
 - Regenerate `pagila-insert-data.sql` from the same data as `pagila-data.sql` — it had drifted badly out of sync (e.g. every film's `release_year` was hardcoded to 2006 regardless of the real value), fixes #39
 - Fix 400 of the 999 customers added in the 4.0.0 data refresh all being named "ELIZABETH HALL" — an uncorrelated scalar subquery in the name-generation script was evaluated once instead of per-row (the same bug class as the earlier `create_date` fix); regenerated with proper per-row random names
-- Add a `Dockerfile` (building pg_partman 5.5.0 from source on `postgres:18`) and hand the `payment` table's future partitions over to it instead of creating them by hand, while leaving the existing Jan 2022 - Jul 2026 partitions untouched; `scripts/add_monthly_data.sh` now calls `partman.run_maintenance_proc()` instead of hand-rolling `CREATE TABLE ... PARTITION OF`
+- Add a `Dockerfile` (building pg_partman 5.5.0 from source on `postgres:18`) and hand the `payment` table's future partitions over to it instead of creating them by hand, while leaving the existing Jan 2022 - Jul 2026 partitions untouched; maintenance runs via `scripts/run_partman_maintenance.sh` on cron (`partman.run_maintenance_proc(0, true, true)`) rather than pg_partman's own background worker, and `scripts/add_monthly_data.sh` calls the same procedure as a safety net
 
 Version 3.1.0
 

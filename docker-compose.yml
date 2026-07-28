@@ -5,16 +5,6 @@ services:
   pagila:
     build: .
     container_name: pagila
-    command:
-      - postgres
-      - -c
-      - shared_preload_libraries=pg_partman_bgw
-      - -c
-      - pg_partman_bgw.dbname=pagila
-      - -c
-      - pg_partman_bgw.role=postgres
-      - -c
-      - pg_partman_bgw.interval=3600
     environment:
       POSTGRES_PASSWORD: 123456
       POSTGRES_USER: postgres

@@ -1,9 +1,10 @@
 -- Populate one month of realistic rental/payment activity in an existing
 -- pagila database. The payment table's monthly partitions are managed by
--- pg_partman (see pg_partman-setup.sql) rather than by hand here: its
--- background worker (docker-compose.yml) keeps future months pre-created,
--- and the explicit run_maintenance_proc() call below is just a safety net
--- in case the worker hasn't run yet since the last new month started.
+-- pg_partman (see pg_partman-setup.sql) rather than by hand here: a cron
+-- job is expected to run scripts/run_partman_maintenance.sh regularly to
+-- keep future months pre-created, and the explicit run_maintenance_proc()
+-- call below is just a safety net in case that hasn't run yet since the
+-- last new month started.
 --
 -- Not meant to be run directly with `psql -f` alone: it expects a
 -- `target_month` variable (first day of the month, e.g. 2026-08-01), which
@@ -32,7 +33,7 @@ SELECT
   \quit 1
 \endif
 
-CALL partman.run_maintenance_proc();
+CALL partman.run_maintenance_proc(0, true, true);
 
 BEGIN;
 
