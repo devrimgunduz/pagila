@@ -3,11 +3,12 @@ volumes:
   pgdata:
 services:
   pagila:
-    image: postgres:17
+    image: postgres:18
     container_name: pagila
     environment:
       POSTGRES_PASSWORD: 123456
       POSTGRES_USER: postgres
+      POSTGRES_DB: pagila
     volumes:
       - ./pagila-schema.sql:/docker-entrypoint-initdb.d/1-pagila-schema.sql
       - ./pagila-schema-jsonb.sql:/docker-entrypoint-initdb.d/1-pagila-schema-jsonb.sql
@@ -15,7 +16,7 @@ services:
       - ./restore-pagila-data-jsonb.sh:/docker-entrypoint-initdb.d/3-restore-pagila-data-jsonb.sh
       - ./pagila-data-yum-jsonb.backup:/docker-entrypoint-initdb.d/pagila-data-yum-jsonb.backup
       - ./pagila-data-apt-jsonb.backup:/docker-entrypoint-initdb.d/pagila-data-apt-jsonb.backup
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
     expose:
       - 5432
     ports:

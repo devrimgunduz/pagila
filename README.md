@@ -5,7 +5,7 @@ originally developed by Mike Hillyer of the MySQL AB documentation team. It
 is intended to provide a standard schema that can be used for examples in
 books, tutorials, articles, samples, etc.
 
-Pagila has been tested against PostgreSQL 12 and above.
+Pagila has been tested against PostgreSQL 18 and above.
 
 All the tables, data, views, and functions have been ported; some of the
 changes made were:
@@ -78,6 +78,103 @@ tables holding real package metadata from apt.postgresql.org and
 yum.postgresql.org, useful for practicing JSONB on a different shape of
 data. See the INSTALL NOTE below for how to load them.
 
+## SQL/JSON FUNCTIONS (PostgreSQL 17+)
+
+PostgreSQL 17 added the SQL-standard SQL/JSON query functions
+(`JSON_EXISTS()`, `JSON_VALUE()`, `JSON_QUERY()`), the constructor functions
+(`JSON()`, `JSON_SCALAR()`, `JSON_SERIALIZE()`), and `JSON_TABLE()`.
+`actor_info.film_info` (see JSONB above) is a convenient place to try them
+out; all of the queries below were run against it.
+
+`JSON_EXISTS()` checks whether a path matches anything, without pulling the
+data back:
+
+```sql
+SELECT actor_id, first_name, last_name
+FROM actor_info
+WHERE JSON_EXISTS(film_info, '$.Games');
+```
+
+`JSON_VALUE()` pulls out a single scalar, `JSON_QUERY()` pulls out an
+object/array:
+
+```sql
+SELECT actor_id, first_name, last_name,
+       JSON_VALUE(film_info, '$.Games[0]') AS first_game_film,
+       JSON_QUERY(film_info, '$.Games') AS games_films
+FROM actor_info
+WHERE JSON_EXISTS(film_info, '$.Games');
+```
+
+`JSON_TABLE()` turns JSON into rows. On its own it replaces a
+`jsonb_array_elements()` call:
+
+```sql
+SELECT jt.*
+FROM actor_info,
+     JSON_TABLE(film_info, '$.Games[*]' COLUMNS (
+       ord FOR ORDINALITY,
+       game_title text PATH '$'
+     )) AS jt
+WHERE actor_id = 1;
+```
+
+`NESTED PATH` is where it earns its keep: flattening every category for an
+actor into (category, title) rows in one query, no `jsonb_each()` +
+`jsonb_array_elements()` combo needed:
+
+```sql
+WITH doc AS (
+  SELECT jsonb_build_object(
+    'actor', first_name || ' ' || last_name,
+    'categories', (
+      SELECT jsonb_agg(jsonb_build_object('category', key, 'titles', value))
+      FROM jsonb_each(film_info)
+    )
+  ) AS payload
+  FROM actor_info
+  WHERE actor_id = 1
+)
+SELECT jt.*
+FROM doc,
+     JSON_TABLE(
+       payload, '$'
+       COLUMNS (
+         actor text PATH '$.actor',
+         NESTED PATH '$.categories[*]' COLUMNS (
+           category text PATH '$.category',
+           NESTED PATH '$.titles[*]' COLUMNS (
+             title text PATH '$'
+           )
+         )
+       )
+     ) AS jt
+ORDER BY category, title;
+```
+
+The constructor functions build or validate JSON rather than query it:
+
+```sql
+-- JSON_SCALAR(): wrap a plain SQL value as a JSON scalar
+SELECT title, JSON_SCALAR(title) AS title_scalar, JSON_SCALAR(rental_rate) AS rate_scalar
+FROM film
+ORDER BY film_id
+LIMIT 3;
+
+-- JSON_SERIALIZE(): render JSON/JSONB back out as text
+SELECT actor_id, JSON_SERIALIZE(film_info::json RETURNING text) AS film_info_text
+FROM actor_info
+WHERE actor_id = 1;
+
+-- JSON(): parse/validate a text payload as JSON, optionally rejecting duplicate keys
+SELECT JSON('{"actor_id": 1, "note": "top renter"}') AS parsed;
+SELECT JSON('{"a": 1, "a": 2}' WITH UNIQUE KEYS) AS parsed; -- ERROR: duplicate JSON object key value
+```
+
+Note: as tested against 17.10/18.4/19beta2, `JSON_SERIALIZE()` mishandles a
+`jsonb`-typed argument passed directly (silently returns 1 byte of
+garbage) — casting to `json` first, as above, avoids it.
+
 ## PARTITIONED TABLES
 
 The payment table is designed as a partitioned table, with one partition per
@@ -143,6 +240,10 @@ Version 4.0.0
 - Add `scripts/add_monthly_data.sh` to keep a running pagila instance current: creates the next `payment` partition and populates a month of new rental/payment activity, meant to be scheduled monthly
 - Rework the `actor_info` view to return a JSONB column (film titles grouped by category) instead of a concatenated text string, so it's a domain-relevant example for practicing JSONB operators (fixes #21)
 - Change `language.name` from `character(20)` to `text`, and strip the trailing blank-padding it left in the shipped data, matching the `text`-everywhere convention used by every other column (fixes #33)
+- Document PostgreSQL 17's SQL/JSON query functions (`JSON_EXISTS()`, `JSON_VALUE()`, `JSON_QUERY()`), `JSON_TABLE()`, and the constructor functions (`JSON()`, `JSON_SCALAR()`, `JSON_SERIALIZE()`) in the README, with example queries verified against `actor_info`
+- Raise the minimum supported PostgreSQL version to 18
+- Bump `docker-compose.yml` to the `postgres:18` image, and move the `pgdata` volume mount from `/var/lib/postgresql/data` to `/var/lib/postgresql` — the 18+ images refuse to start with a volume mounted at the old path (see [docker-library/postgres#1259](https://github.com/docker-library/postgres/pull/1259)); verified with a full `docker compose up`
+- Set `POSTGRES_DB: pagila` in `docker-compose.yml` (and fix `restore-pagila-data-jsonb.sh` to restore into it) so `docker-compose up` actually loads data into a `pagila` database, matching the README's own `\c pagila` instructions instead of silently loading everything into the default `postgres` database
 
 Version 3.1.0
 
