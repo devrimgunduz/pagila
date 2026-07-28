@@ -83,6 +83,14 @@ pg_restore /usr/share/pagila/pagila-data-apt-jsonb.backup -U postgres -d pagila
 
 ## VERSION HISTORY
 
+Version 3.1.0
+
+- Refresh `pagila-data.sql` with more diverse, less repetitive sample data:
+  - Grow the customer base from 599 to 999, with signups spread across 2022-2026 instead of a single date
+  - Grow rental activity from ~16k to ~51.8k rows, and payments from ~16k to ~51k rows, spanning January 2022 through July 2026 instead of a few months in 2022
+  - Randomize `last_update`/`create_date` timestamps across all tables instead of reusing one fixed value per table
+- Add 48 new monthly partitions to the `payment` table in `pagila-schema.sql` (Aug 2022 - Jul 2026) to support the extended date range
+
 Version 3.0.0
 
 - Add JSONB sample data (based on the packages at apt.postgresql.org and yum.postgresql.org)
