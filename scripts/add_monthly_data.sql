@@ -1,5 +1,9 @@
 -- Populate one month of realistic rental/payment activity in an existing
--- pagila database, creating that month's payment partition first if needed.
+-- pagila database. The payment table's monthly partitions are managed by
+-- pg_partman (see pg_partman-setup.sql) rather than by hand here: its
+-- background worker (docker-compose.yml) keeps future months pre-created,
+-- and the explicit run_maintenance_proc() call below is just a safety net
+-- in case the worker hasn't run yet since the last new month started.
 --
 -- Not meant to be run directly with `psql -f` alone: it expects a
 -- `target_month` variable (first day of the month, e.g. 2026-08-01), which
@@ -7,9 +11,8 @@
 --
 --   psql -d pagila -v target_month=2026-08-01 -f scripts/add_monthly_data.sql
 --
--- Re-running for a month that already has a partition is fine (the
--- partition step is skipped); re-running the data step just appends
--- another batch of activity for that month.
+-- Safe to re-run for the same month: it just appends another batch of
+-- activity for that month.
 
 \set ON_ERROR_STOP on
 
@@ -19,16 +22,7 @@
   \quit 1
 \endif
 
-BEGIN;
-
--- 1. Create the month's payment partition if it doesn't exist yet.
---    (Not a DO block: psql's :'var' interpolation is intentionally skipped
---    inside $$...$$ bodies, so the partition name/bounds are worked out
---    with plain SELECT ... \gset and \if instead.)
 SELECT
-  :'target_month'::date AS month_start,
-  (:'target_month'::date + interval '1 month')::date AS month_end,
-  format('payment_p%s', to_char(:'target_month'::date, 'YYYY_MM')) AS part_name,
   CASE WHEN :'target_month'::date <> date_trunc('month', :'target_month'::date)::date
        THEN 'true' ELSE 'false' END AS bad_month
 \gset
@@ -38,20 +32,11 @@ SELECT
   \quit 1
 \endif
 
-SELECT CASE WHEN EXISTS (
-    SELECT 1 FROM pg_class WHERE relname = :'part_name' AND relkind = 'r'
-  ) THEN 'true' ELSE 'false' END AS part_exists
-\gset
+CALL partman.run_maintenance_proc();
 
-\if :part_exists
-  \echo 'Partition' :part_name 'already exists, skipping create'
-\else
-  CREATE TABLE public.:"part_name" PARTITION OF public.payment
-    FOR VALUES FROM (:'month_start') TO (:'month_end');
-  \echo 'Created partition' :part_name
-\endif
+BEGIN;
 
--- 2. Generate a batch of new rentals (and matching payments) dated within
+-- 1. Generate a batch of new rentals (and matching payments) dated within
 --    the target month. Everything is clamped so it never lands after
 --    "now" (can't rent something in the future) or after the month's end
 --    (so payments always land in the partition just created above).

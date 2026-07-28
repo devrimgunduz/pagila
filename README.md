@@ -210,17 +210,57 @@ timestamps.
 ## PARTITIONED TABLES
 
 The payment table is designed as a partitioned table, with one partition per
-calendar month. `pagila-schema.sql` currently ships partitions covering
-January 2022 through July 2026; see "KEEPING DATA FRESH" below for how to
-add new months as time goes on.
+calendar month. `pagila-schema.sql` ships partitions covering January 2022
+through July 2026, created by hand. From August 2026 onward, partitions are
+created automatically by pg_partman instead — see "PARTITIONING WITH
+PG_PARTMAN" below.
+
+## PARTITIONING WITH PG_PARTMAN
+
+The `docker-compose.yml` setup builds a custom image (see `Dockerfile`)
+that adds [pg_partman](https://github.com/pgpartman/pg_partman) 5.5.0 to
+`postgres:18`, and hands the `payment` table's future partitions over to
+it (`pg_partman-setup.sql`) instead of creating them by hand. It's a good
+way to see pg_partman adopt an existing native-partitioned table without
+disturbing the partitions that already exist:
+
+```sql
+-- how it's configured:
+SELECT partman.create_parent(
+    p_parent_table    := 'public.payment',
+    p_control         := 'payment_date',
+    p_interval        := '1 month',
+    p_type            := 'range',
+    p_start_partition := '2026-08-01 00:00:00+00'
+);
+```
+
+`p_start_partition` is the key part: it tells pg_partman to only manage
+partitions from August 2026 onward, leaving the hand-created 2022-2026
+history alone. From then on, pg_partman's background worker
+(`shared_preload_libraries=pg_partman_bgw` in `docker-compose.yml`) keeps
+`p_premake` (default 4) months pre-created automatically — no more manual
+`CREATE TABLE ... PARTITION OF`:
+
+```sql
+-- see its config:
+SELECT parent_table, control, partition_interval, premake
+FROM partman.part_config;
+
+-- list all of payment's partitions, old (hand-created) and new (pg_partman):
+SELECT * FROM partman.show_partitions('public.payment');
+
+-- force partition maintenance immediately instead of waiting for the
+-- background worker's next run (scripts/add_monthly_data.sh does this):
+CALL partman.run_maintenance_proc();
+```
 
 ## KEEPING DATA FRESH
 
 `scripts/add_monthly_data.sh` populates one calendar month of new,
-realistic rental/payment activity into a running pagila database,
-creating that month's `payment` partition first if it doesn't exist yet.
-It's meant to be run once a month (e.g. via cron) against a long-lived
-pagila instance so the data keeps looking current instead of going stale.
+realistic rental/payment activity into a running pagila database. It's
+meant to be run once a month (e.g. via cron) against a long-lived pagila
+instance so the data keeps looking current instead of going stale.
 
 ```
 # Populate the current month (uses the standard PG* env vars / ~/.pgpass
@@ -239,9 +279,8 @@ Example crontab entry, running at 03:00 on the 1st of every month:
   /path/to/pagila/scripts/add_monthly_data.sh >> /var/log/pagila-monthly.log 2>&1
 ```
 
-It's safe to re-run for the same month: partition creation is skipped if
-the partition already exists, and re-running the data step just appends
-another batch of activity for that month.
+It's safe to re-run for the same month: it just appends another batch of
+activity for that month.
 
 ## INSTALL NOTE
 
@@ -279,6 +318,7 @@ Version 4.0.0
 - Add a `uuid` column (`DEFAULT uuidv7()`, unique-indexed) to `customer`, `rental`, and `payment`, demonstrating PostgreSQL 18's new UUID functions
 - Regenerate `pagila-insert-data.sql` from the same data as `pagila-data.sql` — it had drifted badly out of sync (e.g. every film's `release_year` was hardcoded to 2006 regardless of the real value), fixes #39
 - Fix 400 of the 999 customers added in the 4.0.0 data refresh all being named "ELIZABETH HALL" — an uncorrelated scalar subquery in the name-generation script was evaluated once instead of per-row (the same bug class as the earlier `create_date` fix); regenerated with proper per-row random names
+- Add a `Dockerfile` (building pg_partman 5.5.0 from source on `postgres:18`) and hand the `payment` table's future partitions over to it instead of creating them by hand, while leaving the existing Jan 2022 - Jul 2026 partitions untouched; `scripts/add_monthly_data.sh` now calls `partman.run_maintenance_proc()` instead of hand-rolling `CREATE TABLE ... PARTITION OF`
 
 Version 3.1.0
 

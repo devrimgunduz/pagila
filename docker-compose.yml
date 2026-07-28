@@ -3,8 +3,18 @@ volumes:
   pgdata:
 services:
   pagila:
-    image: postgres:18
+    build: .
     container_name: pagila
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_partman_bgw
+      - -c
+      - pg_partman_bgw.dbname=pagila
+      - -c
+      - pg_partman_bgw.role=postgres
+      - -c
+      - pg_partman_bgw.interval=3600
     environment:
       POSTGRES_PASSWORD: 123456
       POSTGRES_USER: postgres
@@ -16,6 +26,7 @@ services:
       - ./restore-pagila-data-jsonb.sh:/docker-entrypoint-initdb.d/3-restore-pagila-data-jsonb.sh
       - ./pagila-data-yum-jsonb.backup:/docker-entrypoint-initdb.d/pagila-data-yum-jsonb.backup
       - ./pagila-data-apt-jsonb.backup:/docker-entrypoint-initdb.d/pagila-data-apt-jsonb.backup
+      - ./pg_partman-setup.sql:/docker-entrypoint-initdb.d/4-pg-partman-setup.sql
       - pgdata:/var/lib/postgresql
     expose:
       - 5432
