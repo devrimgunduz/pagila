@@ -142,6 +142,7 @@ Version 4.0.0
 - Add 48 new monthly partitions to the `payment` table in `pagila-schema.sql` (Aug 2022 - Jul 2026) to support the extended date range
 - Add `scripts/add_monthly_data.sh` to keep a running pagila instance current: creates the next `payment` partition and populates a month of new rental/payment activity, meant to be scheduled monthly
 - Rework the `actor_info` view to return a JSONB column (film titles grouped by category) instead of a concatenated text string, so it's a domain-relevant example for practicing JSONB operators (fixes #21)
+- Change `language.name` from `character(20)` to `text`, and strip the trailing blank-padding it left in the shipped data, matching the `text`-everywhere convention used by every other column (fixes #33)
 
 Version 3.1.0
 

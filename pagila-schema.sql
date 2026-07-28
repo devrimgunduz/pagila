@@ -686,7 +686,7 @@ ALTER TABLE public.language_language_id_seq OWNER TO postgres;
 
 CREATE TABLE public.language (
     language_id integer DEFAULT nextval('public.language_language_id_seq'::regclass) NOT NULL,
-    name character(20) NOT NULL,
+    name text NOT NULL,
     last_update timestamp with time zone DEFAULT now() NOT NULL
 );
 
