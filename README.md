@@ -61,8 +61,39 @@ Default Password: root
 
 ## PARTITIONED TABLES
 
-The payment table is designed as a partitioned table with a 7 month timespan
-for the date ranges.
+The payment table is designed as a partitioned table, with one partition per
+calendar month. `pagila-schema.sql` currently ships partitions covering
+January 2022 through July 2026; see "KEEPING DATA FRESH" below for how to
+add new months as time goes on.
+
+## KEEPING DATA FRESH
+
+`scripts/add_monthly_data.sh` populates one calendar month of new,
+realistic rental/payment activity into a running pagila database,
+creating that month's `payment` partition first if it doesn't exist yet.
+It's meant to be run once a month (e.g. via cron) against a long-lived
+pagila instance so the data keeps looking current instead of going stale.
+
+```
+# Populate the current month (uses the standard PG* env vars / ~/.pgpass
+# for the connection, same as psql):
+PGHOST=localhost PGUSER=postgres PGPASSWORD=secret PGDATABASE=pagila \
+  ./scripts/add_monthly_data.sh
+
+# Populate a specific month instead:
+./scripts/add_monthly_data.sh 2026-08
+```
+
+Example crontab entry, running at 03:00 on the 1st of every month:
+
+```
+0 3 1 * * PGHOST=localhost PGUSER=postgres PGPASSWORD=secret PGDATABASE=pagila \
+  /path/to/pagila/scripts/add_monthly_data.sh >> /var/log/pagila-monthly.log 2>&1
+```
+
+It's safe to re-run for the same month: partition creation is skipped if
+the partition already exists, and re-running the data step just appends
+another batch of activity for that month.
 
 ## INSTALL NOTE
 
@@ -83,13 +114,24 @@ pg_restore /usr/share/pagila/pagila-data-apt-jsonb.backup -U postgres -d pagila
 
 ## VERSION HISTORY
 
-Version 3.1.0
+Version 4.0.0
 
 - Refresh `pagila-data.sql` with more diverse, less repetitive sample data:
   - Grow the customer base from 599 to 999, with signups spread across 2022-2026 instead of a single date
   - Grow rental activity from ~16k to ~51.8k rows, and payments from ~16k to ~51k rows, spanning January 2022 through July 2026 instead of a few months in 2022
   - Randomize `last_update`/`create_date` timestamps across all tables instead of reusing one fixed value per table
 - Add 48 new monthly partitions to the `payment` table in `pagila-schema.sql` (Aug 2022 - Jul 2026) to support the extended date range
+- Add `scripts/add_monthly_data.sh` to keep a running pagila instance current: creates the next `payment` partition and populates a month of new rental/payment activity, meant to be scheduled monthly
+
+Version 3.1.0
+
+This is a maintenance release by 5 contributors:
+
+- Format 2nd list of relations. by @michelc in https://github.com/devrimgunduz/pagila/pull/20
+- pgAdmin by @Qoyyuum in https://github.com/devrimgunduz/pagila/pull/27
+- Container name in Docker Compose by @Qoyyuum in https://github.com/devrimgunduz/pagila/pull/24
+- Sakila Link by @Qoyyuum in https://github.com/devrimgunduz/pagila/pull/25
+- Schema Diagram by @Qoyyuum in https://github.com/devrimgunduz/pagila/pull/26
 
 Version 3.0.0
 
