@@ -175,6 +175,64 @@ Note: as tested against 17.10/18.4/19beta2, `JSON_SERIALIZE()` mishandles a
 `jsonb`-typed argument passed directly (silently returns 1 byte of
 garbage) — casting to `json` first, as above, avoids it.
 
+## PGVECTOR
+
+`pgvector` isn't bundled with PostgreSQL — `docker-compose.yml` builds it from
+source (alongside pg_partman, see "PARTITIONING WITH PG_PARTMAN" below) via
+the `Dockerfile`, and `pagila-schema.sql` runs `CREATE EXTENSION vector`.
+
+`film_embedding` gives each film a `vector(20)` in a shape meant to be
+inspected, not just queried: dimensions 1-16 are a multi-hot encoding of the
+film's categories (`film_category` can hold more than one per film), and
+17-20 are `length`, `rental_rate`, `replacement_cost`, and `rental_duration`,
+each min-max normalized to `[0, 1]`. These aren't real text embeddings from a
+language model — there's no plot-summary model in this dataset to run — but
+engineered from data already in `film`, so nearest-neighbor search returns
+films that actually share categories and attributes, which makes the results
+easy to sanity-check by eye:
+
+```sql
+SELECT f.film_id, f.title, fe.embedding
+FROM film_embedding fe JOIN film f USING (film_id)
+WHERE f.film_id = 1;
+```
+
+pgvector adds three distance operators: `<->` (Euclidean/L2), `<#>` (negative
+inner product), and `<=>` (cosine distance). Cosine is the natural fit here,
+since it ignores the vectors' magnitude and only compares direction — so a
+short, cheap film and a long, expensive one in the same categories can still
+land close together:
+
+```sql
+-- the 5 films most similar to ACADEMY DINOSAUR (Games, New, Travel):
+SELECT f2.film_id, f2.title,
+       fe1.embedding <=> fe2.embedding AS distance
+FROM film_embedding fe1
+JOIN film_embedding fe2 ON fe2.film_id <> fe1.film_id
+JOIN film f2 ON f2.film_id = fe2.film_id
+WHERE fe1.film_id = 1
+ORDER BY distance
+LIMIT 5;
+```
+
+`pagila-schema.sql` creates an HNSW index (`film_embedding_embedding_hnsw_idx`)
+on `embedding` using `vector_cosine_ops`, matching the `<=>` operator above —
+an ANN index has to be built for the specific operator/distance it'll be
+queried with:
+
+```sql
+-- confirm the planner is using the HNSW index rather than a sequential scan:
+EXPLAIN SELECT film_id, title
+FROM film_embedding fe JOIN film USING (film_id)
+ORDER BY embedding <=> (SELECT embedding FROM film_embedding WHERE film_id = 1)
+LIMIT 5;
+```
+
+HNSW (unlike ivfflat) needs no training step at `CREATE INDEX` time, which is
+why it was picked here: `pagila-schema.sql` creates the index before any data
+exists (`pagila-data.sql`/`pagila-insert-data.sql` load afterward), and an
+ivfflat index built against zero rows would cluster poorly.
+
 ## UUIDV7 (PostgreSQL 18+)
 
 PostgreSQL 18 added built-in UUID generation: `uuidv7()` (time-ordered,
@@ -330,6 +388,7 @@ Version 4.0.0
 - Regenerate `pagila-insert-data.sql` from the same data as `pagila-data.sql` — it had drifted badly out of sync (e.g. every film's `release_year` was hardcoded to 2006 regardless of the real value), fixes #39
 - Fix 400 of the 999 customers added in the 4.0.0 data refresh all being named "ELIZABETH HALL" — an uncorrelated scalar subquery in the name-generation script was evaluated once instead of per-row (the same bug class as the earlier `create_date` fix); regenerated with proper per-row random names
 - Add a `Dockerfile` (building pg_partman 5.5.0 from source on `postgres:18`) and hand the `payment` table's future partitions over to it instead of creating them by hand, while leaving the existing Jan 2022 - Jul 2026 partitions untouched; maintenance runs via `scripts/run_partman_maintenance.sh` on cron (`partman.run_maintenance_proc(0, true, true)`) rather than pg_partman's own background worker, and `scripts/add_monthly_data.sh` calls the same procedure as a safety net
+- Add pgvector 0.8.6 (built from source in the same `Dockerfile` as pg_partman) and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
 
 Version 3.1.0
 
