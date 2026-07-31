@@ -370,6 +370,9 @@ pg_restore /usr/share/pagila/pagila-data-apt-jsonb.backup -U postgres -d pagila
 
 ## VERSION HISTORY
 
+Version 4.1.0
+- Add pgvector support and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
+
 Version 4.0.0
 
 - Refresh `pagila-data.sql` with more diverse, less repetitive sample data:
@@ -388,7 +391,6 @@ Version 4.0.0
 - Regenerate `pagila-insert-data.sql` from the same data as `pagila-data.sql` — it had drifted badly out of sync (e.g. every film's `release_year` was hardcoded to 2006 regardless of the real value), fixes #39
 - Fix 400 of the 999 customers added in the 4.0.0 data refresh all being named "ELIZABETH HALL" — an uncorrelated scalar subquery in the name-generation script was evaluated once instead of per-row (the same bug class as the earlier `create_date` fix); regenerated with proper per-row random names
 - Add a `Dockerfile` (building pg_partman 5.5.0 from source on `postgres:18`) and hand the `payment` table's future partitions over to it instead of creating them by hand, while leaving the existing Jan 2022 - Jul 2026 partitions untouched; maintenance runs via `scripts/run_partman_maintenance.sh` on cron (`partman.run_maintenance_proc(0, true, true)`) rather than pg_partman's own background worker, and `scripts/add_monthly_data.sh` calls the same procedure as a safety net
-- Add pgvector 0.8.6 (built from source in the same `Dockerfile` as pg_partman) and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
 
 Version 3.1.0
 
