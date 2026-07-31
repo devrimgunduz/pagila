@@ -177,9 +177,10 @@ garbage) — casting to `json` first, as above, avoids it.
 
 ## PGVECTOR
 
-`pgvector` isn't bundled with PostgreSQL — `docker-compose.yml` builds it from
-source (alongside pg_partman, see "PARTITIONING WITH PG_PARTMAN" below) via
-the `Dockerfile`, and `pagila-schema.sql` runs `CREATE EXTENSION vector`.
+`pgvector` isn't bundled with PostgreSQL — `docker-compose.yml` installs it
+from the PGDG apt repo (alongside pg_partman, see "PARTITIONING WITH
+PG_PARTMAN" below) via the `Dockerfile`, and `pagila-schema.sql` runs
+`CREATE EXTENSION vector`.
 
 `film_embedding` gives each film a `vector(20)` in a shape meant to be
 inspected, not just queried: dimensions 1-16 are a multi-hot encoding of the
@@ -276,11 +277,12 @@ PG_PARTMAN" below.
 ## PARTITIONING WITH PG_PARTMAN
 
 The `docker-compose.yml` setup builds a custom image (see `Dockerfile`)
-that adds [pg_partman](https://github.com/pgpartman/pg_partman) 5.5.0 to
-`postgres:18`, and hands the `payment` table's future partitions over to
-it (`pg_partman-setup.sql`) instead of creating them by hand. It's a good
-way to see pg_partman adopt an existing native-partitioned table without
-disturbing the partitions that already exist:
+that adds [pg_partman](https://github.com/pgpartman/pg_partman) to
+`postgres:18` from the PGDG apt repo, and hands the `payment` table's
+future partitions over to it (`pg_partman-setup.sql`) instead of creating
+them by hand. It's a good way to see pg_partman adopt an existing
+native-partitioned table without disturbing the partitions that already
+exist:
 
 ```sql
 -- how it's configured:
@@ -390,7 +392,7 @@ Version 4.0.0
 - Add a `uuid` column (`DEFAULT uuidv7()`, unique-indexed) to `customer`, `rental`, and `payment`, demonstrating PostgreSQL 18's new UUID functions
 - Regenerate `pagila-insert-data.sql` from the same data as `pagila-data.sql` — it had drifted badly out of sync (e.g. every film's `release_year` was hardcoded to 2006 regardless of the real value), fixes #39
 - Fix 400 of the 999 customers added in the 4.0.0 data refresh all being named "ELIZABETH HALL" — an uncorrelated scalar subquery in the name-generation script was evaluated once instead of per-row (the same bug class as the earlier `create_date` fix); regenerated with proper per-row random names
-- Add a `Dockerfile` (building pg_partman 5.5.0 from source on `postgres:18`) and hand the `payment` table's future partitions over to it instead of creating them by hand, while leaving the existing Jan 2022 - Jul 2026 partitions untouched; maintenance runs via `scripts/run_partman_maintenance.sh` on cron (`partman.run_maintenance_proc(0, true, true)`) rather than pg_partman's own background worker, and `scripts/add_monthly_data.sh` calls the same procedure as a safety net
+- Add a `Dockerfile` (installing pg_partman from the PGDG apt repo on `postgres:18`) and hand the `payment` table's future partitions over to it instead of creating them by hand, while leaving the existing Jan 2022 - Jul 2026 partitions untouched; maintenance runs via `scripts/run_partman_maintenance.sh` on cron (`partman.run_maintenance_proc(0, true, true)`) rather than pg_partman's own background worker, and `scripts/add_monthly_data.sh` calls the same procedure as a safety net
 
 Version 3.1.0
 
