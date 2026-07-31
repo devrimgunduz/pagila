@@ -326,6 +326,133 @@ CALL partman.run_maintenance_proc(0, true, true);
   /path/to/pagila/scripts/run_partman_maintenance.sh >> /var/log/pagila-partman.log 2>&1
 ```
 
+## SQL/PGQ - PROPERTY GRAPH QUERIES (PostgreSQL 19+)
+
+PostgreSQL 19 adds `CREATE PROPERTY GRAPH` and `GRAPH_TABLE`, an
+implementation of SQL/PGQ (ISO/IEC 9075-16), the SQL-standard way to run
+graph pattern-matching queries. A property graph is a read-only view over
+existing relational tables — nothing is duplicated — so it declares which
+tables act as graph vertices and which act as edges, and the planner
+rewrites `MATCH` patterns into ordinary joins underneath (`EXPLAIN` shows
+plain `Nested Loop`/`Index Scan` nodes, not a special graph executor node).
+
+Because this needs PostgreSQL 19, which is newer than this project's
+`postgres:18`-based `docker-compose.yml`, it isn't wired into the compose
+pipeline; instead, `sql-pgq-setup.sql` is a standalone script to run by
+hand, after `pagila-schema.sql`/`pagila-data.sql`, against a PostgreSQL 19+
+instance:
+
+```sql
+CREATE PROPERTY GRAPH pagila_graph
+  VERTEX TABLES (
+    actor    KEY (actor_id)    LABEL actor    PROPERTIES (actor_id, first_name, last_name),
+    film     KEY (film_id)     LABEL film     PROPERTIES (film_id, title, release_year, rating),
+    category KEY (category_id) LABEL category PROPERTIES (category_id, name)
+  )
+  EDGE TABLES (
+    film_actor
+      SOURCE KEY (actor_id) REFERENCES actor (actor_id)
+      DESTINATION KEY (film_id) REFERENCES film (film_id)
+      LABEL acted_in NO PROPERTIES,
+    film_category
+      SOURCE KEY (film_id) REFERENCES film (film_id)
+      DESTINATION KEY (category_id) REFERENCES category (category_id)
+      LABEL categorized_as NO PROPERTIES
+  );
+```
+
+`film_actor` and `film_category` work as edge tables as-is, with no changes
+needed — both are already primary-keyed on exactly the (source,
+destination) column pair a graph edge needs. `\d pagila_graph` describes
+the shape:
+
+```
+ Element Alias |    Element Table     | Element Kind | Source Vertex Alias | Destination Vertex Alias
+---------------+----------------------+--------------+---------------------+--------------------------
+ actor         | public.actor         | vertex       |                     |
+ category      | public.category      | vertex       |                     |
+ film          | public.film          | vertex       |                     |
+ film_actor    | public.film_actor    | edge         | actor               | film
+ film_category | public.film_category | edge         | film                | category
+```
+
+A one-hop pattern — every film PENELOPE GUINESS acted in:
+
+```sql
+SELECT title
+FROM GRAPH_TABLE (pagila_graph
+  MATCH (a IS actor WHERE a.first_name = 'PENELOPE' AND a.last_name = 'GUINESS')-[IS acted_in]->(f IS film)
+  COLUMNS (f.title)
+)
+ORDER BY title;
+```
+
+A two-hop pattern through `film` and back out through `acted_in` in
+reverse (`<-[IS acted_in]-`) finds her co-stars. Filters that compare two
+pattern variables (`a1.actor_id <> a2.actor_id`) aren't supported inside
+the pattern itself in this initial implementation, so that comparison
+moves to the outer query instead:
+
+```sql
+SELECT first_name, last_name, title
+FROM GRAPH_TABLE (pagila_graph
+  MATCH (a1 IS actor WHERE a1.first_name = 'PENELOPE' AND a1.last_name = 'GUINESS')
+        -[IS acted_in]->(f IS film)<-[IS acted_in]-(a2 IS actor)
+  COLUMNS (a1.actor_id AS a1_id, a2.actor_id AS a2_id, a2.first_name, a2.last_name, f.title)
+)
+WHERE a1_id <> a2_id
+ORDER BY last_name, first_name, title;
+```
+
+Chaining through both edge tables (`acted_in` then `categorized_as`) reaches
+a second vertex type in one pattern — every category she's appeared in:
+
+```sql
+SELECT DISTINCT name
+FROM GRAPH_TABLE (pagila_graph
+  MATCH (a IS actor WHERE a.first_name = 'PENELOPE' AND a.last_name = 'GUINESS')
+        -[IS acted_in]->(f IS film)-[IS categorized_as]->(c IS category)
+  COLUMNS (c.name AS name)
+)
+ORDER BY name;
+```
+
+A 4-hop pattern (`actor -> film -> category <- film <- actor`) plus a
+`co_stars` query, combined with `NOT IN`, recommends actors who share a
+genre with her but have never actually shared a film:
+
+```sql
+WITH genre_mates AS (
+  SELECT DISTINCT a2_id, first_name, last_name
+  FROM GRAPH_TABLE (pagila_graph
+    MATCH (a1 IS actor WHERE a1.first_name = 'PENELOPE' AND a1.last_name = 'GUINESS')
+          -[IS acted_in]->(f1 IS film)-[IS categorized_as]->(c IS category)
+          <-[IS categorized_as]-(f2 IS film)<-[IS acted_in]-(a2 IS actor)
+    COLUMNS (a1.actor_id AS a1_id, a2.actor_id AS a2_id, a2.first_name, a2.last_name)
+  )
+  WHERE a1_id <> a2_id
+),
+co_stars AS (
+  SELECT DISTINCT a2_id
+  FROM GRAPH_TABLE (pagila_graph
+    MATCH (a1 IS actor WHERE a1.first_name = 'PENELOPE' AND a1.last_name = 'GUINESS')
+          -[IS acted_in]->(f IS film)<-[IS acted_in]-(a2 IS actor)
+    COLUMNS (a2.actor_id AS a2_id)
+  )
+)
+SELECT first_name, last_name
+FROM genre_mates
+WHERE a2_id NOT IN (SELECT a2_id FROM co_stars)
+ORDER BY last_name, first_name;
+```
+
+Note: this initial PostgreSQL 19 implementation covers fixed-depth
+patterns only — quantified/variable-length path patterns (e.g. a `{1,3}`
+hop-count range) and path search modes (`ANY SHORTEST`, `ALL`) aren't
+supported yet, which is why the "genre mates" query above chains two fixed
+patterns with `NOT IN` rather than expressing it as a single variable-length
+path.
+
 ## KEEPING DATA FRESH
 
 `scripts/add_monthly_data.sh` populates one calendar month of new,
@@ -374,6 +501,7 @@ pg_restore /usr/share/pagila/pagila-data-apt-jsonb.backup -U postgres -d pagila
 
 Version 4.1.0
 - Add pgvector support and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
+- Add `sql-pgq-setup.sql`, declaring a `pagila_graph` property graph over the existing `actor`/`film`/`category` vertex tables and `film_actor`/`film_category` edge tables (no new data), demonstrating PostgreSQL 19's SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) with `MATCH` pattern examples in the README, verified against a `postgres:19beta2` container
 
 Version 4.0.0
 
