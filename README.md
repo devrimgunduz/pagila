@@ -266,6 +266,29 @@ project's data-loading scripts, not the fictional `create_date`/
 by `uuid` tracks insertion order, not the sample data's backdated business
 timestamps.
 
+## VIRTUAL GENERATED COLUMNS (PostgreSQL 18+)
+
+Generated columns (`GENERATED ALWAYS AS (...)`) existed before PostgreSQL 18,
+but only as `STORED` — computed on write and persisted like a normal column.
+18 added the `VIRTUAL` kind (and made it the default when `STORED` is
+omitted): computed on read instead, like a view expression, so it adds no
+storage and never goes stale relative to the columns it depends on.
+
+`film.length_hours` is `VIRTUAL`, derived from the existing `length` column
+(minutes) rather than adding new data:
+
+```sql
+SELECT film_id, title, length, length_hours
+FROM film
+ORDER BY film_id
+LIMIT 3;
+```
+
+Note: unlike `STORED` generated columns, `VIRTUAL` ones can't be indexed
+directly (`CREATE INDEX ... (length_hours)` fails with "indexes on virtual
+generated columns are not supported") — index the underlying expression
+instead (`CREATE INDEX ON film (round(length / 60.0, 2))`) if you need one.
+
 ## PARTITIONED TABLES
 
 The payment table is designed as a partitioned table, with one partition per
@@ -502,6 +525,7 @@ pg_restore /usr/share/pagila/pagila-data-apt-jsonb.backup -U postgres -d pagila
 Version 4.1.0
 - Add pgvector support and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
 - Add `pagila-sql-pgq-setup.sql`, declaring a `pagila_graph` property graph over the existing `actor`/`film`/`category` vertex tables and `film_actor`/`film_category` edge tables (no new data), demonstrating PostgreSQL 19's SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) with `MATCH` pattern examples in the README, verified against a `postgres:19beta2` container
+- Add `film.length_hours`, a `VIRTUAL` generated column (`round(length / 60.0, 2)`) demonstrating PostgreSQL 18's new virtual generated columns, documented in the README alongside a note that (unlike `STORED`) virtual generated columns can't be indexed directly
 
 Version 4.0.0
 

@@ -449,7 +449,8 @@ CREATE TABLE public.film (
     rating public.mpaa_rating DEFAULT 'G'::public.mpaa_rating,
     last_update timestamp with time zone DEFAULT now() NOT NULL,
     special_features text[],
-    fulltext tsvector NOT NULL
+    fulltext tsvector NOT NULL,
+    length_hours numeric(4,2) GENERATED ALWAYS AS (round(length / 60.0, 2)) VIRTUAL
 );
 
 
