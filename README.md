@@ -338,7 +338,7 @@ plain `Nested Loop`/`Index Scan` nodes, not a special graph executor node).
 
 Because this needs PostgreSQL 19, which is newer than this project's
 `postgres:18`-based `docker-compose.yml`, it isn't wired into the compose
-pipeline; instead, `sql-pgq-setup.sql` is a standalone script to run by
+pipeline; instead, `pagila-sql-pgq-setup.sql` is a standalone script to run by
 hand, after `pagila-schema.sql`/`pagila-data.sql`, against a PostgreSQL 19+
 instance:
 
@@ -501,7 +501,7 @@ pg_restore /usr/share/pagila/pagila-data-apt-jsonb.backup -U postgres -d pagila
 
 Version 4.1.0
 - Add pgvector support and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
-- Add `sql-pgq-setup.sql`, declaring a `pagila_graph` property graph over the existing `actor`/`film`/`category` vertex tables and `film_actor`/`film_category` edge tables (no new data), demonstrating PostgreSQL 19's SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) with `MATCH` pattern examples in the README, verified against a `postgres:19beta2` container
+- Add `pagila-sql-pgq-setup.sql`, declaring a `pagila_graph` property graph over the existing `actor`/`film`/`category` vertex tables and `film_actor`/`film_category` edge tables (no new data), demonstrating PostgreSQL 19's SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) with `MATCH` pattern examples in the README, verified against a `postgres:19beta2` container
 
 Version 4.0.0
 
