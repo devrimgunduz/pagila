@@ -476,6 +476,173 @@ supported yet, which is why the "genre mates" query above chains two fixed
 patterns with `NOT IN` rather than expressing it as a single variable-length
 path.
 
+## TEMPORAL TABLES (PostgreSQL 19+)
+
+PostgreSQL 19 adds application-time temporal support from SQL:2011
+(ISO/IEC 9075-2): `WITHOUT OVERLAPS` primary/unique keys and temporal
+foreign keys built on range-typed columns, plus native `UPDATE`/`DELETE
+... FOR PORTION OF` DML that splits a row at the edges of the portion
+being changed instead of requiring hand-written split logic. Like SQL/PGQ
+above, this needs PostgreSQL 19, so it isn't wired into
+`docker-compose.yml`; `pagila-temporal-setup.sql` is a standalone script
+to run by hand, after `pagila-schema.sql`/`pagila-data.sql`, against a
+PostgreSQL 19+ instance.
+
+`film_price_history` tracks `film.rental_rate`/`replacement_cost` as
+they've actually changed over a title's life, one row per validity
+period. `WITHOUT OVERLAPS` is implemented as a GiST exclusion constraint
+under the hood, so it needs the `btree_gist` extension for a
+GiST-compatible equality operator class on the non-range key column
+(`film_id`):
+
+```sql
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
+CREATE TABLE film_price_history (
+    film_id integer NOT NULL REFERENCES film (film_id),
+    rental_rate numeric(4,2) NOT NULL,
+    replacement_cost numeric(5,2) NOT NULL,
+    valid_at daterange NOT NULL,
+    PRIMARY KEY (film_id, valid_at WITHOUT OVERLAPS)
+);
+```
+
+`store_film_price_override` layers a per-store rate on top for some
+sub-period. Its `FOREIGN KEY (film_id, PERIOD valid_at)` is a *temporal*
+foreign key: it requires every override period to fall entirely within a
+period where `film_price_history` actually has that film on record — not
+merely overlap it:
+
+```sql
+CREATE TABLE store_film_price_override (
+    store_id integer NOT NULL REFERENCES store (store_id),
+    film_id integer NOT NULL,
+    rental_rate numeric(4,2) NOT NULL,
+    valid_at daterange NOT NULL,
+    PRIMARY KEY (store_id, film_id, valid_at WITHOUT OVERLAPS),
+    FOREIGN KEY (film_id, PERIOD valid_at) REFERENCES film_price_history (film_id, PERIOD valid_at)
+);
+```
+
+`pagila-temporal-setup.sql` populates ACADEMY DINOSAUR (`film_id` 1) with
+three non-overlapping periods — a new-release price, a mid-life discount,
+and its current `0.99`/`20.99` — and gives ACE GOLDFINGER (`film_id` 2) a
+single open-ended period at its current price. `WITHOUT OVERLAPS` is
+scoped to `film_id`, so two different films can have periods that overlap
+the same calendar dates without conflict:
+
+```sql
+SELECT film_id, rental_rate, replacement_cost, valid_at
+FROM film_price_history
+ORDER BY film_id, valid_at;
+```
+
+```
+ film_id | rental_rate | replacement_cost |        valid_at
+---------+-------------+-------------------+-------------------------
+       1 |        4.99 |             24.99 | [2022-01-01,2023-01-01)
+       1 |        2.99 |             22.99 | [2023-01-01,2024-06-01)
+       1 |        0.99 |             20.99 | [2024-06-01,2024-07-01)
+       1 |        0.49 |             20.99 | [2024-07-01,2024-08-01)
+       1 |        0.99 |             20.99 | [2024-08-01,)
+       2 |        4.99 |             12.99 | [2023-01-01,2023-06-01)
+       2 |        4.99 |             12.99 | [2023-07-01,)
+```
+
+(The two-row split for each film above is what's left after the
+`FOR PORTION OF` examples below run — see there for the before/after.)
+
+**Overlaps predicate (`&&`)**: every price period, for any film, in effect
+at any point during a given window — the summer of 2024:
+
+```sql
+SELECT film_id, rental_rate, valid_at
+FROM film_price_history
+WHERE valid_at && daterange('2024-06-15', '2024-07-15')
+ORDER BY film_id, valid_at;
+```
+
+**Containment predicate (`@>`)**: the rate in effect on one specific date
+— what ACADEMY DINOSAUR rented for on 2023-05-15:
+
+```sql
+SELECT rental_rate
+FROM film_price_history
+WHERE film_id = 1 AND valid_at @> DATE '2023-05-15';
+-- 2.99
+```
+
+**`UPDATE ... FOR PORTION OF`**: a one-month summer promotion cuts
+ACADEMY DINOSAUR's rate to `0.49`, but only for July 2024. Before this
+runs, the row is a single open-ended period at `0.99` starting
+2024-06-01; `FOR PORTION OF` splits it into three, leaving the parts
+outside the given range untouched:
+
+```sql
+UPDATE film_price_history
+FOR PORTION OF valid_at FROM '2024-07-01' TO '2024-08-01'
+SET rental_rate = 0.49
+WHERE film_id = 1;
+```
+
+```
+ film_id | rental_rate |        valid_at
+---------+-------------+-------------------------
+       1 |        0.99 | [2024-06-01,2024-07-01)   <- untouched, before
+       1 |        0.49 | [2024-07-01,2024-08-01)   <- the portion, updated
+       1 |        0.99 | [2024-08-01,)              <- untouched, after (still open-ended)
+```
+
+A plain `UPDATE ... WHERE valid_at && ...` would instead overwrite the
+*entire* matching row's `rental_rate`, wiping out the price for all of
+June through the present — `FOR PORTION OF` is what makes "just July"
+possible without hand-writing the two boundary INSERTs yourself.
+
+**`DELETE ... FOR PORTION OF`** works the same way. ACE GOLDFINGER is
+pulled from the catalog for June 2023, splitting its single open-ended
+row into a bounded one and a new open-ended one, opening a gap where the
+film has no price on record at all:
+
+```sql
+DELETE FROM film_price_history
+FOR PORTION OF valid_at FROM '2023-06-01' TO '2023-07-01'
+WHERE film_id = 2;
+```
+
+```
+ film_id | rental_rate |        valid_at
+---------+-------------+-------------------------
+       2 |        4.99 | [2023-01-01,2023-06-01)
+       2 |        4.99 | [2023-07-01,)
+```
+
+Note: `FOR PORTION OF` still enforces the temporal foreign key. Store 2's
+override runs `[2024-06-01,)`, referencing ACADEMY DINOSAUR's
+`[2024-06-01,2024-07-01)`/`[2024-07-01,2024-08-01)` periods created by the
+`UPDATE` above; trying to delete either one out from under it fails just
+like a non-temporal FK would:
+
+```sql
+DELETE FROM film_price_history
+FOR PORTION OF valid_at FROM '2024-07-25' TO '2024-08-01'
+WHERE film_id = 1;
+-- ERROR:  update or delete on table "film_price_history" violates foreign key
+--         constraint "store_film_price_override_film_id_valid_at_fkey" on table
+--         "store_film_price_override"
+```
+
+Joining the two tables on overlapping periods compares each store's
+override rate against the base rate it was active during, using `*` to
+compute the overlap itself as a range:
+
+```sql
+SELECT o.store_id, o.film_id, o.rental_rate AS store_rate,
+       h.rental_rate AS base_rate, o.valid_at * h.valid_at AS overlap_period
+FROM store_film_price_override o
+JOIN film_price_history h ON o.film_id = h.film_id AND o.valid_at && h.valid_at
+ORDER BY o.store_id;
+```
+
 ## KEEPING DATA FRESH
 
 `scripts/add_monthly_data.sh` populates one calendar month of new,
@@ -526,6 +693,7 @@ Version 4.1.0
 - Add pgvector support and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
 - Add `pagila-sql-pgq-setup.sql`, declaring a `pagila_graph` property graph over the existing `actor`/`film`/`category` vertex tables and `film_actor`/`film_category` edge tables (no new data), demonstrating PostgreSQL 19's SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) with `MATCH` pattern examples in the README, verified against a `postgres:19beta2` container
 - Add `film.length_hours`, a `VIRTUAL` generated column (`round(length / 60.0, 2)`) demonstrating PostgreSQL 18's new virtual generated columns, documented in the README alongside a note that (unlike `STORED`) virtual generated columns can't be indexed directly
+- Add `pagila-temporal-setup.sql`, declaring `film_price_history` (`WITHOUT OVERLAPS` primary key on `film_id`/a `daterange`) and `store_film_price_override` (a temporal foreign key back to it), demonstrating PostgreSQL 19's SQL:2011 application-time temporal support — `WITHOUT OVERLAPS` keys, temporal foreign keys, and `UPDATE`/`DELETE ... FOR PORTION OF` row-splitting DML — with overlaps/containment predicate examples in the README, verified against a `postgres:19beta2` container
 
 Version 4.0.0
 
