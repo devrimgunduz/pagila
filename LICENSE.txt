@@ -1,6 +1,6 @@
 PostgreSQL License
 
-Copyright (c) Devrim Gündüz <devrim@gunduz.org>
+Copyright (c) 2015-2026, Devrim Gündüz <devrim@gunduz.org>
 
 Permission to use, copy, modify, and distribute this software and its
 documentation for any purpose, without fee, and without a written agreement
