@@ -97,8 +97,8 @@ docker exec -i postgres pg_restore -U postgres -d pagila < pagila-data-yum-jsonb
 psql -U postgres -d pagila -f pg_partman-setup.sql
 ```
 
-6. Optional, PostgreSQL 19+ only: add the temporal tables example (see
-[TEMPORAL TABLES](#temporal-tables-postgresql-19)):
+6. Optional: add the temporal tables example (see
+[TEMPORAL TABLES](#temporal-tables-postgresql-18)):
 
 ```
 psql -U postgres -d pagila -f pagila-temporal-setup.sql
@@ -440,16 +440,18 @@ CALL partman.run_maintenance_proc(0, true, true);
   /path/to/pagila/scripts/run_partman_maintenance.sh >> /var/log/pagila-partman.log 2>&1
 ```
 
-## TEMPORAL TABLES (PostgreSQL 19+)
+## TEMPORAL TABLES (PostgreSQL 18+)
 
-PostgreSQL 19 adds application-time temporal support from SQL:2011
+PostgreSQL 18 added application-time temporal support from SQL:2011
 (ISO/IEC 9075-2): `WITHOUT OVERLAPS` primary/unique keys and temporal
-foreign keys built on range-typed columns, plus native `UPDATE`/`DELETE
-... FOR PORTION OF` DML that splits a row at the edges of the portion
-being changed instead of requiring hand-written split logic. Since this needs PostgreSQL 19, it isn't wired into
-`docker-compose.yml`; `pagila-temporal-setup.sql` is a standalone script
-to run by hand, after `pagila-schema.sql`/`pagila-data.sql`, against a
-PostgreSQL 19+ instance.
+foreign keys built on range-typed columns. `pagila-temporal-setup.sql` is
+a standalone script, not wired into `docker-compose.yml`, to run by hand
+after `pagila-schema.sql`/`pagila-data.sql`.
+
+`UPDATE`/`DELETE ... FOR PORTION OF` is not available: it was added during
+PostgreSQL 19 development and reverted before release, so splitting a
+period still means updating the row and inserting the leftover periods
+yourself.
 
 `film_price_history` tracks `film.rental_rate`/`replacement_cost` as
 they've actually changed over a title's life, one row per validity
@@ -502,18 +504,12 @@ ORDER BY film_id, valid_at;
 
 ```
  film_id | rental_rate | replacement_cost |        valid_at
----------+-------------+-------------------+-------------------------
-       1 |        4.99 |             24.99 | [2022-01-01,2023-01-01)
-       1 |        2.99 |             22.99 | [2023-01-01,2024-06-01)
-       1 |        0.99 |             20.99 | [2024-06-01,2024-07-01)
-       1 |        0.49 |             20.99 | [2024-07-01,2024-08-01)
-       1 |        0.99 |             20.99 | [2024-08-01,)
-       2 |        4.99 |             12.99 | [2023-01-01,2023-06-01)
-       2 |        4.99 |             12.99 | [2023-07-01,)
+---------+-------------+------------------+-------------------------
+       1 |        4.99 |            24.99 | [2022-01-01,2023-01-01)
+       1 |        2.99 |            22.99 | [2023-01-01,2024-06-01)
+       1 |        0.99 |            20.99 | [2024-06-01,)
+       2 |        4.99 |            12.99 | [2023-01-01,)
 ```
-
-(The two-row split for each film above is what's left after the
-`FOR PORTION OF` examples below run — see there for the before/after.)
 
 **Overlaps predicate (`&&`)**: every price period, for any film, in effect
 at any point during a given window — the summer of 2024:
@@ -535,63 +531,25 @@ WHERE film_id = 1 AND valid_at @> DATE '2023-05-15';
 -- 2.99
 ```
 
-**`UPDATE ... FOR PORTION OF`**: a one-month summer promotion cuts
-ACADEMY DINOSAUR's rate to `0.49`, but only for July 2024. Before this
-runs, the row is a single open-ended period at `0.99` starting
-2024-06-01; `FOR PORTION OF` splits it into three, leaving the parts
-outside the given range untouched:
+**Rejected writes**: both constraints check periods, not just keys. A
+second price for ACE GOLDFINGER that overlaps its open-ended period
+violates `WITHOUT OVERLAPS`, even though no two rows would be identical:
 
 ```sql
-UPDATE film_price_history
-FOR PORTION OF valid_at FROM '2024-07-01' TO '2024-08-01'
-SET rental_rate = 0.49
-WHERE film_id = 1;
+INSERT INTO film_price_history (film_id, rental_rate, replacement_cost, valid_at)
+VALUES (2, 3.99, 12.99, daterange('2024-01-01', '2025-01-01'));
+-- ERROR:  conflicting key value violates exclusion constraint "film_price_history_pkey"
 ```
 
-```
- film_id | rental_rate |        valid_at
----------+-------------+-------------------------
-       1 |        0.99 | [2024-06-01,2024-07-01)   <- untouched, before
-       1 |        0.49 | [2024-07-01,2024-08-01)   <- the portion, updated
-       1 |        0.99 | [2024-08-01,)              <- untouched, after (still open-ended)
-```
-
-A plain `UPDATE ... WHERE valid_at && ...` would instead overwrite the
-*entire* matching row's `rental_rate`, wiping out the price for all of
-June through the present — `FOR PORTION OF` is what makes "just July"
-possible without hand-writing the two boundary INSERTs yourself.
-
-**`DELETE ... FOR PORTION OF`** works the same way. ACE GOLDFINGER is
-pulled from the catalog for June 2023, splitting its single open-ended
-row into a bounded one and a new open-ended one, opening a gap where the
-film has no price on record at all:
+The temporal foreign key rejects an override that merely overlaps a
+base price period. ACE GOLDFINGER's history starts on 2023-01-01, so this
+one, which begins in 2022, fails:
 
 ```sql
-DELETE FROM film_price_history
-FOR PORTION OF valid_at FROM '2023-06-01' TO '2023-07-01'
-WHERE film_id = 2;
-```
-
-```
- film_id | rental_rate |        valid_at
----------+-------------+-------------------------
-       2 |        4.99 | [2023-01-01,2023-06-01)
-       2 |        4.99 | [2023-07-01,)
-```
-
-Note: `FOR PORTION OF` still enforces the temporal foreign key. Store 2's
-override runs `[2024-06-01,)`, referencing ACADEMY DINOSAUR's
-`[2024-06-01,2024-07-01)`/`[2024-07-01,2024-08-01)` periods created by the
-`UPDATE` above; trying to delete either one out from under it fails just
-like a non-temporal FK would:
-
-```sql
-DELETE FROM film_price_history
-FOR PORTION OF valid_at FROM '2024-07-25' TO '2024-08-01'
-WHERE film_id = 1;
--- ERROR:  update or delete on table "film_price_history" violates foreign key
---         constraint "store_film_price_override_film_id_valid_at_fkey" on table
---         "store_film_price_override"
+INSERT INTO store_film_price_override (store_id, film_id, rental_rate, valid_at)
+VALUES (1, 2, 3.99, daterange('2022-06-01', '2023-06-01'));
+-- ERROR:  insert or update on table "store_film_price_override" violates foreign key
+--         constraint "store_film_price_override_film_id_valid_at_fkey"
 ```
 
 Joining the two tables on overlapping periods compares each store's
@@ -634,6 +592,12 @@ It's safe to re-run for the same month: it just appends another batch of
 activity for that month.
 
 ## VERSION HISTORY
+
+Version 4.1.2
+- Remove the `UPDATE`/`DELETE ... FOR PORTION OF` statements from `pagila-temporal-setup.sql` and the README, since `FOR PORTION OF` was reverted from PostgreSQL 19
+- Lower the temporal tables example's requirement from PostgreSQL 19 to 18, which is where `WITHOUT OVERLAPS` and temporal foreign keys arrived, in the README, `pagila-temporal-setup.sql` and `pagila-schema-diagram.png`
+- Set `search_path` in `pagila-temporal-setup.sql`, so it works with `\i` from the session that loaded `pagila-schema.sql`/`pagila-data.sql`
+- Add README examples of writes rejected by the `WITHOUT OVERLAPS` key and the temporal foreign key
 
 Version 4.1.1
 - Remove `pagila-sql-pgq-setup.sql`, the SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) README section and the matching panel in `pagila-schema-diagram.png`, since SQL/PGQ was reverted from PostgreSQL 19

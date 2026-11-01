@@ -1,12 +1,13 @@
 -- Application-time temporal support (SQL:2011 / ISO/IEC 9075-2) added in
--- PostgreSQL 19: WITHOUT OVERLAPS primary/unique keys and temporal foreign
--- keys built on range-typed columns, plus native UPDATE/DELETE ... FOR
--- PORTION OF DML that splits a row at the edges of the portion being
--- changed. Requires PostgreSQL 19+, newer than this project's
--- postgres:18-based docker-compose.yml, so this isn't wired into the
--- compose pipeline; run it by hand, after pagila-schema.sql/pagila-data.sql,
--- against a PostgreSQL 19+ instance. See the "TEMPORAL TABLES" section of
--- the README for example queries.
+-- PostgreSQL 18: WITHOUT OVERLAPS primary/unique keys and temporal foreign
+-- keys built on range-typed columns. This isn't wired into the compose
+-- pipeline; run it by hand, after pagila-schema.sql/pagila-data.sql. See the
+-- "TEMPORAL TABLES" section of the README for example queries.
+
+-- pagila-schema.sql and pagila-data.sql empty search_path for the rest of
+-- their session, so set it here for anyone running this with \i from the
+-- same psql session.
+SET search_path = public;
 
 -- WITHOUT OVERLAPS is implemented as a GiST exclusion constraint under the
 -- hood, so the non-range columns in the key (film_id, store_id, ...) need
@@ -62,19 +63,3 @@ INSERT INTO store_film_price_override (store_id, film_id, rental_rate, valid_at)
 -- entirely within the current (open-ended) base price period.
 INSERT INTO store_film_price_override (store_id, film_id, rental_rate, valid_at) VALUES
     (2, 1, 0.79, daterange('2024-06-01', NULL));
-
--- A one-month summer promotion cuts ACADEMY DINOSAUR's base rate further,
--- splitting the open-ended 0.99 row into three: before, during, and after
--- the promotion. See the "TEMPORAL TABLES" section of the README for the
--- row-by-row result and how FOR PORTION OF differs from a plain UPDATE.
-UPDATE film_price_history
-FOR PORTION OF valid_at FROM '2024-07-01' TO '2024-08-01'
-SET rental_rate = 0.49
-WHERE film_id = 1;
-
--- ACE GOLDFINGER is pulled from the catalog for a month, splitting its
--- single open-ended row into a bounded one and a new open-ended one, with
--- a June gap where the film has no price on record at all.
-DELETE FROM film_price_history
-FOR PORTION OF valid_at FROM '2023-06-01' TO '2023-07-01'
-WHERE film_id = 2;
