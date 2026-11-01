@@ -79,6 +79,17 @@ pg_restore -U postgres -d pagila pagila-data-apt-jsonb.backup
 pg_restore -U postgres -d pagila pagila-data-yum-jsonb.backup
 ```
 
+To load them into a running container, pipe the files in from the host. This
+example uses a container named `postgres`, and the same commands work with
+`podman exec`. The Docker Compose and Podman Compose setups already load these
+files, so they don't need this step.
+
+```
+docker exec -i postgres psql -U postgres -d pagila < pagila-schema-jsonb.sql
+docker exec -i postgres pg_restore -U postgres -d pagila < pagila-data-apt-jsonb.backup
+docker exec -i postgres pg_restore -U postgres -d pagila < pagila-data-yum-jsonb.backup
+```
+
 5. Optional: hand future `payment` partitions over to pg_partman (see
 [PARTITIONING WITH PG_PARTMAN](#partitioning-with-pg_partman)):
 
@@ -628,6 +639,7 @@ Version 4.1.1
 - Remove `pagila-sql-pgq-setup.sql`, the SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) README section and the matching panel in `pagila-schema-diagram.png`, since SQL/PGQ was reverted from PostgreSQL 19
 - Move the README's install notes ahead of the example queries and expand them into step-by-step instructions, including prerequisites, optional components and the correct `pagila-schema-jsonb.sql` file name
 - Document `podman compose` as an alternative to `docker-compose`
+- Add an example of loading the JSONB files into a running container
 
 Version 4.1.0
 - Add pgvector support and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
