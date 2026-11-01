@@ -21,6 +21,86 @@ changes made were:
 
 The pagila database is made available under PostgreSQL license.
 
+## INSTALL NOTE
+
+The quickest way to get a complete pagila database is Docker Compose or Podman
+Compose, either of which builds an image with every required extension and loads everything except the
+temporal tables example. See
+[CREATE DATABASE ON DOCKER-COMPOSE](#create-database-on-docker-compose).
+
+To install into your own PostgreSQL server instead, you need:
+
+- PostgreSQL 18 or above
+- [pgvector](https://github.com/pgvector/pgvector), which `pagila-schema.sql`
+  requires. Without it, `film_embedding` isn't created and loading its data fails.
+- A superuser role named `postgres`, which owns the database objects
+- [pg_partman](https://github.com/pgpartman/pg_partman), only if you want
+  step 5 below
+
+Packages for both extensions are available from the PGDG repositories. For
+PostgreSQL 18, they are `postgresql-18-pgvector` and `postgresql-18-partman`
+on apt, and `pgvector_18` and `pg_partman_18` on yum/dnf.
+
+Run the commands below from the root of this repository. If you installed
+pagila from a package, the files are in `/usr/share/pagila`. Add `-h` and `-p`
+as needed to reach your server, or use the standard `PG*` environment variables.
+
+1. Create the database:
+
+```
+createdb -U postgres pagila
+```
+
+2. Create the schema:
+
+```
+psql -U postgres -d pagila -f pagila-schema.sql
+```
+
+3. Load the data:
+
+```
+psql -U postgres -d pagila -f pagila-data.sql
+```
+
+The pagila-data.sql file and the pagila-insert-data.sql both contain the same
+data, the former using COPY commands, the latter using INSERT commands, so you
+only need to install one of them. Both formats are provided for those who have
+trouble using one version or another, and for instructors who want to point out
+the longer data loading time with the latter. You can load them via psql, pgAdmin, etc.
+
+4. Optional: load the JSONB tables. Since JSONB data is quite large to store on
+Github, the data files are not plain SQL. Use psql, pgAdmin, etc. to load
+`pagila-schema-jsonb.sql`, then use pg_restore to load the data files:
+
+```
+psql -U postgres -d pagila -f pagila-schema-jsonb.sql
+pg_restore -U postgres -d pagila pagila-data-apt-jsonb.backup
+pg_restore -U postgres -d pagila pagila-data-yum-jsonb.backup
+```
+
+5. Optional: hand future `payment` partitions over to pg_partman (see
+[PARTITIONING WITH PG_PARTMAN](#partitioning-with-pg_partman)):
+
+```
+psql -U postgres -d pagila -f pg_partman-setup.sql
+```
+
+6. Optional, PostgreSQL 19+ only: add the temporal tables example (see
+[TEMPORAL TABLES](#temporal-tables-postgresql-19)):
+
+```
+psql -U postgres -d pagila -f pagila-temporal-setup.sql
+```
+
+7. Connect and check the result:
+
+```
+psql -U postgres -d pagila -c 'SELECT count(*) FROM film;'
+```
+
+This should return 1000.
+
 ## EXAMPLE QUERY
 
 Find late rentals:
@@ -76,7 +156,7 @@ WHERE film_info -> 'Games' ? 'ACADEMY DINOSAUR';
 `pagila-data-apt-jsonb.backup` are a separate, unrelated JSONB example: two
 tables holding real package metadata from apt.postgresql.org and
 yum.postgresql.org, useful for practicing JSONB on a different shape of
-data. See the INSTALL NOTE below for how to load them.
+data. See the INSTALL NOTE above for how to load them.
 
 ## SQL/JSON FUNCTIONS (PostgreSQL 17+)
 
@@ -542,27 +622,12 @@ Example crontab entry, running at 03:00 on the 1st of every month:
 It's safe to re-run for the same month: it just appends another batch of
 activity for that month.
 
-## INSTALL NOTE
-
-The pagila-data.sql file and the pagila-insert-data.sql both contain the same
-data, the former using COPY commands, the latter using INSERT commands, so you
-only need to install one of them. Both formats are provided for those who have
-trouble using one version or another, and for instructors who want to point out
-the longer data loading time with the latter. You can load them via psql, pgAdmin, etc.
-
-Since JSONB data is quite large to store on Github, the backup is not a plain SQL
-file. You can still use psql/pgAdmin, etc. to load `pagila-schema-jsonb.backup`, however
-please use pg_restore to load jsonb data files:
-
-```
-pg_restore /usr/share/pagila/pagila-data-yum-jsonb.backup -U postgres -d pagila
-pg_restore /usr/share/pagila/pagila-data-apt-jsonb.backup -U postgres -d pagila
-```
-
 ## VERSION HISTORY
 
 Version 4.1.1
 - Remove `pagila-sql-pgq-setup.sql`, the SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) README section and the matching panel in `pagila-schema-diagram.png`, since SQL/PGQ was reverted from PostgreSQL 19
+- Move the README's install notes ahead of the example queries and expand them into step-by-step instructions, including prerequisites, optional components and the correct `pagila-schema-jsonb.sql` file name
+- Document `podman compose` as an alternative to `docker-compose`
 
 Version 4.1.0
 - Add pgvector support and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
@@ -734,10 +799,22 @@ pagila=#
 docker-compose up
 ```
 
+Or, with [Podman](https://podman.io/):
+
+```
+podman compose up
+```
+
 2. Done! Just use:
 
 ```
 docker exec -it pagila psql -U postgres
+```
+
+Or, with Podman:
+
+```
+podman exec -it pagila psql -U postgres
 ```
 
 ```
