@@ -598,12 +598,13 @@ Version 4.1.2
 - Lower the temporal tables example's requirement from PostgreSQL 19 to 18, which is where `WITHOUT OVERLAPS` and temporal foreign keys arrived, in the README, `pagila-temporal-setup.sql` and `pagila-schema-diagram.png`
 - Set `search_path` in `pagila-temporal-setup.sql`, so it works with `\i` from the session that loaded `pagila-schema.sql`/`pagila-data.sql`
 - Add README examples of writes rejected by the `WITHOUT OVERLAPS` key and the temporal foreign key
-
-Version 4.1.1
-- Remove `pagila-sql-pgq-setup.sql`, the SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) README section and the matching panel in `pagila-schema-diagram.png`, since SQL/PGQ was reverted from PostgreSQL 19
 - Move the README's install notes ahead of the example queries and expand them into step-by-step instructions, including prerequisites, optional components and the correct `pagila-schema-jsonb.sql` file name
 - Document `podman compose` as an alternative to `docker-compose`
 - Add an example of loading the JSONB files into a running container
+- Replace the MIT licence text in `LICENSE.txt` with the PostgreSQL License text, which the README already named as pagila's licence, and add the years to its copyright line
+
+Version 4.1.1
+- Remove `pagila-sql-pgq-setup.sql`, the SQL/PGQ (`CREATE PROPERTY GRAPH`/`GRAPH_TABLE`) README section and the matching panel in `pagila-schema-diagram.png`, since SQL/PGQ was reverted from PostgreSQL 19
 
 Version 4.1.0
 - Add pgvector support and a `film_embedding` table with a `vector(20)` per film — a multi-hot encoding of its categories plus a few normalized numeric attributes, engineered from existing `film`/`film_category` data rather than a real text-embedding model — indexed with HNSW (`vector_cosine_ops`) and documented in the README with cosine-distance nearest-neighbor examples
